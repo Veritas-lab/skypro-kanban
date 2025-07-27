@@ -8,13 +8,17 @@ import "./App.css";
 
 function App() {
   return (
-    <div className="wrapper">
-      <PopExit />
-      <PopNewCard />
-      <PopBrowse />
-      <Header />
-      <Main />
-    </div>
+    <>
+      <GlobalStyles />
+      <div className="wrapper">
+        <PopExit />
+        <PopNewCard />
+        <PopBrowse />
+        <Header />
+        <Main />
+      </div>
+    </>
   );
 }
+
 export default App;
