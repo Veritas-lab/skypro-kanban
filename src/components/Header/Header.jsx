@@ -1,4 +1,4 @@
-import PopUser from "../Popups/PopUser";
+import PopUser from "../Popups/PopUser.jsx";
 
 export default function Header() {
   return (
