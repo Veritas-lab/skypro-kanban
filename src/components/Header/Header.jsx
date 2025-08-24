@@ -1,5 +1,13 @@
 import { useState } from "react";
 import PopUser from "../Popups/PopUser";
+import {
+  HeaderWrapper,
+  HeaderBlock,
+  HeaderLogo,
+  HeaderNav,
+  HeaderButtonNew,
+  HeaderUser,
+} from "./Header.styled";
 
 export default function Header() {
   const [isUserPopupOpen, setIsUserPopupOpen] = useState(false);
@@ -9,37 +17,29 @@ export default function Header() {
   };
 
   return (
-    <header className="header">
-      <div className="container">
-        <div className="header__block">
-          <div className="header__logo _show _light">
-            <a href="" target="_self">
-              <img src="../public/images/logo.png" alt="logo"></img>
-            </a>
-          </div>
-          <div className="header__logo _dark">
-            <a href="" target="_self">
-              <img src="../public/images/logo_dark.png" alt="logo"></img>
-            </a>
-          </div>
-          <nav className="header__nav">
-            <button className="header__btn-main-new _hover01" id="btnMainNew">
-              <a href="#popNewCard">Создать новую задачу</a>
-            </button>
-            <a
-              href="#user-set-target"
-              className="header__user _hover02"
-              onClick={(e) => {
-                e.preventDefault();
-                toggleUserPopup();
-              }}
-            >
-              Ivan Ivanov
-            </a>
-            {isUserPopupOpen && <PopUser onClose={toggleUserPopup} />}
-          </nav>
-        </div>
-      </div>
-    </header>
+    <HeaderWrapper>
+      <HeaderBlock>
+        <HeaderLogo>
+          <a href="" target="_self">
+            <img src="../public/images/logo.png" alt="logo" />
+          </a>
+        </HeaderLogo>
+        <HeaderNav>
+          <HeaderButtonNew>
+            <a href="#popNewCard">Создать новую задачу</a>
+          </HeaderButtonNew>
+          <HeaderUser
+            href="#user-set-target"
+            onClick={(e) => {
+              e.preventDefault();
+              toggleUserPopup();
+            }}
+          >
+            Ivan Ivanov
+          </HeaderUser>
+          {isUserPopupOpen && <PopUser onClose={toggleUserPopup} />}
+        </HeaderNav>
+      </HeaderBlock>
+    </HeaderWrapper>
   );
 }

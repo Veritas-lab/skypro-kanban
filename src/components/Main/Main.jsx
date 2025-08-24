@@ -1,3 +1,9 @@
+import {
+  MainWrapper,
+  MainBlock,
+  MainContent,
+  LoadingContainer,
+} from "./Main.styled";
 import Column from "../Column/Column.jsx";
 import { cardList } from "../../data";
 import { useState, useEffect } from "react";
@@ -22,35 +28,20 @@ export default function Main() {
   }, []);
 
   return (
-    <main className="main">
-      <div className="container">
-        <div className="main__block">
-          {isLoading ? (
-            <div
-              style={{
-                width: "100%",
-                height: "60vh",
-                display: "flex",
-                alignItems: "center",
-                justifyContent: "center",
-                fontSize: "24px",
-                color: "#565eef",
-                fontWeight: "600",
-              }}
-            >
-              Данные загружаются...
-            </div>
-          ) : (
-            statuses.map((status) => (
-              <Column
-                key={status}
-                title={status}
-                cards={cardList.filter((card) => card.status === status)}
-              />
-            ))
-          )}
-        </div>
-      </div>
-    </main>
+    <MainWrapper>
+      <MainBlock>
+        {isLoading ? (
+          <LoadingContainer>Данные загружаются...</LoadingContainer>
+        ) : (
+          statuses.map((status) => (
+            <Column
+              key={status}
+              title={status}
+              cards={cardList.filter((card) => card.status === status)}
+            />
+          ))
+        )}
+      </MainBlock>
+    </MainWrapper>
   );
 }
