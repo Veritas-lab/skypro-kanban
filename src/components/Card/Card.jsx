@@ -8,10 +8,10 @@ import {
   CardTitle,
   CardDate,
 } from "./Card.styled";
-import { Link } from "react-router-dom";
 
 export default function Card({ cardData }) {
   const { topic, title, date } = cardData;
+
   const theme = topic.toLowerCase().replace(" ", "");
 
   return (
@@ -21,16 +21,16 @@ export default function Card({ cardData }) {
           <CardTheme theme={theme} className={`card__theme _${theme}`}>
             <p className={`_${theme}`}>{topic}</p>
           </CardTheme>
-          <CardButton as={Link} to={`/card/${cardData.id}`}>
+          <CardButton href="#popBrowse" target="_self">
             <div></div>
             <div></div>
             <div></div>
           </CardButton>
         </CardGroup>
         <CardContent>
-          <Link to="" target="_blank">
+          <a href="" target="_blank">
             <CardTitle>{title}</CardTitle>
-          </Link>
+          </a>
           <CardDate>
             <svg
               xmlns="http://www.w3.org/2000/svg"
