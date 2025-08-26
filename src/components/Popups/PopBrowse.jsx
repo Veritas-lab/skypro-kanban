@@ -1,13 +1,16 @@
-import Calendar from "../Calendar/Calendar.jsx";
+import Calendar from "../Calendar/Calendar";
+import { useNavigate, Link } from "react-router-dom";
 
-export default function PopBrowse() {
+export default function PopBrowse({ cardId }) {
+  const navigate = useNavigate();
+
   return (
     <div className="pop-browse" id="popBrowse">
       <div className="pop-browse__container">
         <div className="pop-browse__block">
           <div className="pop-browse__content">
             <div className="pop-browse__top-block">
-              <h3 className="pop-browse__ttl">Название задачи</h3>
+              <h3 className="pop-browse__ttl">Карточка №{cardId}</h3>
               <div className="categories__theme theme-top _web-design _active-category">
                 <p className="_web-design">Web Design</p>
               </div>
@@ -51,6 +54,7 @@ export default function PopBrowse() {
                   ></textarea>
                 </div>
               </form>
+              <Calendar />
             </div>
             <div className="theme-down__categories theme-down">
               <p className="categories__p subttl">Категория</p>
@@ -61,36 +65,41 @@ export default function PopBrowse() {
             <div className="pop-browse__btn-browse ">
               <div className="btn-group">
                 <button className="btn-browse__edit _btn-bor _hover03">
-                  <a href="#">Редактировать задачу</a>
+                  <Link to="#">Редактировать задачу</Link>
                 </button>
                 <button className="btn-browse__delete _btn-bor _hover03">
-                  <a href="#">Удалить задачу</a>
+                  <Link to="#">Удалить задачу</Link>
                 </button>
               </div>
-              <button className="btn-browse__close _btn-bg _hover01">
-                <a href="#">Закрыть</a>
+              <button
+                className="btn-browse__close _btn-bg _hover01"
+                onClick={() => navigate(-1)}
+              >
+                Закрыть
               </button>
             </div>
             <div className="pop-browse__btn-edit _hide">
               <div className="btn-group">
                 <button className="btn-edit__edit _btn-bg _hover01">
-                  <a href="#">Сохранить</a>
+                  <Link to="#">Сохранить</Link>
                 </button>
                 <button className="btn-edit__edit _btn-bor _hover03">
-                  <a href="#">Отменить</a>
+                  <Link to="#">Отменить</Link>
                 </button>
                 <button
                   className="btn-edit__delete _btn-bor _hover03"
                   id="btnDelete"
                 >
-                  <a href="#">Удалить задачу</a>
+                  <Link to="#">Удалить задачу</Link>
                 </button>
               </div>
-              <button className="btn-edit__close _btn-bg _hover01">
-                <a href="#">Закрыть</a>
+              <button
+                className="btn-edit__close _btn-bg _hover01"
+                onClick={() => navigate(-1)}
+              >
+                Закрыть
               </button>
             </div>
-            <Calendar />
           </div>
         </div>
       </div>
