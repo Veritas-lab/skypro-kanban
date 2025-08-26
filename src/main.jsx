@@ -1,14 +1,14 @@
 import { StrictMode } from "react";
 import { createRoot } from "react-dom/client";
-import { BrowserRouter } from "react-router-dom"; // Добавьте этот импорт
+import { BrowserRouter } from "react-router-dom";
 import "./index.css";
 import App from "./App.jsx";
+import { GlobalStyles } from "./Styles/GlobalStyles";
 
 createRoot(document.getElementById("root")).render(
   <StrictMode>
     <BrowserRouter>
-      {" "}
-      {/* Оберните App в BrowserRouter */}
+      <GlobalStyles />
       <App />
     </BrowserRouter>
   </StrictMode>

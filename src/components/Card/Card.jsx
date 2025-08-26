@@ -1,4 +1,3 @@
-import { useState, useEffect } from "react";
 import {
   CardItem,
   CardWrapper,
@@ -9,61 +8,29 @@ import {
   CardTitle,
   CardDate,
 } from "./Card.styled";
+import { Link } from "react-router-dom";
 
 export default function Card({ cardData }) {
-  const [isLoading, setIsLoading] = useState(true);
-
-  useEffect(() => {
-    const timer = setTimeout(() => {
-      setIsLoading(false);
-    }, 1500);
-
-    return () => clearTimeout(timer);
-  }, []);
-
-  if (isLoading) {
-    return (
-      <CardItem>
-        <CardWrapper
-          style={{
-            display: "flex",
-            justifyContent: "center",
-            alignItems: "center",
-          }}
-        >
-          <p
-            style={{
-              color: "#94A6BE",
-              fontSize: "14px",
-              fontWeight: "500",
-            }}
-          >
-            Данные загружаются...
-          </p>
-        </CardWrapper>
-      </CardItem>
-    );
-  }
-
   const { topic, title, date } = cardData;
+  const theme = topic.toLowerCase().replace(" ", "");
 
   return (
-    <CardItem>
-      <CardWrapper>
+    <CardItem className="cards__item">
+      <CardWrapper className="card">
         <CardGroup>
-          <CardTheme theme={topic.toLowerCase().replace(" ", "-")}>
-            <p>{topic}</p>
+          <CardTheme theme={theme} className={`card__theme _${theme}`}>
+            <p className={`_${theme}`}>{topic}</p>
           </CardTheme>
-          <CardButton href="#popBrowse" target="_self">
+          <CardButton as={Link} to={`/card/${cardData.id}`}>
             <div></div>
             <div></div>
             <div></div>
           </CardButton>
         </CardGroup>
         <CardContent>
-          <a href="" target="_blank">
+          <Link to="" target="_blank">
             <CardTitle>{title}</CardTitle>
-          </a>
+          </Link>
           <CardDate>
             <svg
               xmlns="http://www.w3.org/2000/svg"
