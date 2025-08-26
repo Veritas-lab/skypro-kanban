@@ -5,32 +5,34 @@ import {
   PopUserTheme,
   PopUserButton,
 } from "./PopUser.styled";
+import { Link } from "react-router-dom";
 
 export default function PopUser({ onClose }) {
   return (
     <PopUserWrapper id="user-set-target">
-      <a
-        href="#"
+      <Link
+        to="#"
         onClick={(e) => {
           e.preventDefault();
           onClose();
         }}
       >
         x
-      </a>
+      </Link>
       <PopUserName>Ivan Ivanov</PopUserName>
       <PopUserMail>ivan.ivanov@gmail.com</PopUserMail>
       <PopUserTheme>
         <p>Темная тема</p>
-        <input type="checkbox" className="checkbox" name="checkbox" />
+        <input type="checkbox" name="checkbox" />
       </PopUserTheme>
       <PopUserButton
+        type="button"
         onClick={(e) => {
           e.preventDefault();
           onClose();
         }}
       >
-        <a href="#popExit">Выйти</a>
+        <Link to="/exit">Выйти</Link>
       </PopUserButton>
     </PopUserWrapper>
   );
