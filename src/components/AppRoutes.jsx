@@ -1,3 +1,4 @@
+// AppRoutes.jsx
 import { Routes, Route, Navigate } from "react-router-dom";
 import { useState, useEffect } from "react";
 import MainPage from "../pages/MainPage";
@@ -13,7 +14,13 @@ function ProtectedRoute({ isAuth, children }) {
   return isAuth ? children : <Navigate to="/login" replace />;
 }
 
-export default function AppRoutes() {
+export default function AppRoutes({
+  cards,
+  onAddCard,
+  onUpdateCards,
+  onLoadTasks,
+  loading,
+}) {
   const [isAuth, setIsAuth] = useState(!!localStorage.getItem("userInfo"));
 
   useEffect(() => {
@@ -35,7 +42,19 @@ export default function AppRoutes() {
           </ProtectedRoute>
         }
       >
-        <Route path="/" element={<MainPage setIsAuth={setIsAuth} />}>
+        <Route
+          path="/"
+          element={
+            <MainPage
+              setIsAuth={setIsAuth}
+              cards={cards}
+              onAddCard={onAddCard}
+              onUpdateCards={onUpdateCards}
+              onLoadTasks={onLoadTasks}
+              loading={loading}
+            />
+          }
+        >
           <Route path="card/:id" element={<PopBrowse />} />
           <Route path="new" element={<PopNewCardPage />} />
           <Route path="exit" element={<ExitPage setIsAuth={setIsAuth} />} />

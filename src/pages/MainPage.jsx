@@ -1,3 +1,4 @@
+// MainPage.jsx
 import Column from "../components/Column/Column";
 import { cardList } from "../data";
 import { useState, useEffect } from "react";
@@ -9,7 +10,8 @@ import {
 } from "../components/Main/Main.styled";
 import { Outlet } from "react-router-dom";
 
-export default function MainPage() {
+// eslint-disable-next-line no-empty-pattern
+export default function MainPage({}) {
   const statuses = [
     "Без статуса",
     "Нужно сделать",
@@ -19,14 +21,26 @@ export default function MainPage() {
   ];
 
   const [isLoading, setIsLoading] = useState(true);
+  const [cards, setCards] = useState(cardList);
 
+  // Загрузка карточек из localStorage при монтировании
   useEffect(() => {
-    const timer = setTimeout(() => {
-      setIsLoading(false);
-    }, 1000);
-
-    return () => clearTimeout(timer);
+    const savedCards = localStorage.getItem("userCards");
+    if (savedCards) {
+      setCards(JSON.parse(savedCards));
+    }
+    setIsLoading(false);
   }, []);
+
+  // Сохранение карточек в localStorage при изменении
+  useEffect(() => {
+    localStorage.setItem("userCards", JSON.stringify(cards));
+  }, [cards]);
+
+  // Функция для добавления новой карточки
+  const handleAddCard = (newCard) => {
+    setCards((prevCards) => [...prevCards, newCard]);
+  };
 
   return (
     <>
@@ -41,7 +55,7 @@ export default function MainPage() {
                   <Column
                     key={status}
                     title={status}
-                    cards={cardList.filter((card) => card.status === status)}
+                    cards={cards.filter((card) => card.status === status)}
                   />
                 ))}
               </MainContent>
@@ -49,7 +63,7 @@ export default function MainPage() {
           </MainBlock>
         </div>
       </MainWrapper>
-      <Outlet />
+      <Outlet context={{ onAddCard: handleAddCard }} />
     </>
   );
 }
