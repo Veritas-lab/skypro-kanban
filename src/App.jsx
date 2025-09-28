@@ -2,7 +2,7 @@
 import { useState, useEffect } from "react";
 import AppRoutes from "./components/AppRoutes";
 import { GlobalStyles } from "./Styles/GlobalStyles";
-import { fetchTasks } from "./services/auch";
+import { fetchTasks } from "./services/api";
 
 function App() {
   const [cards, setCards] = useState([]);

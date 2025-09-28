@@ -100,10 +100,18 @@ export default function LoginPage({ setIsAuth }) {
       // Валидация полей
       if (!login.trim() || !password.trim()) {
         setError("Все поля обязательны для заполнения");
+        setLoading(false);
         return;
       }
 
-      const userData = await signIn({ login, password });
+      console.log("Отправка данных:", { login, password }); // Для отладки
+
+      const userData = await signIn({
+        login: login.trim(),
+        password: password.trim(),
+      });
+
+      console.log("Ответ от сервера:", userData); // Для отладки
 
       // Сохраняем данные пользователя в localStorage
       localStorage.setItem(
@@ -117,7 +125,10 @@ export default function LoginPage({ setIsAuth }) {
       setIsAuth(true);
       navigate("/", { replace: true });
     } catch (err) {
-      setError(err.message || "Произошла ошибка при входе");
+      console.error("Ошибка входа:", err); // Для отладки
+      setError(
+        err.message || "Произошла ошибка при входе. Проверьте логин и пароль."
+      );
     } finally {
       setLoading(false);
     }
@@ -135,6 +146,7 @@ export default function LoginPage({ setIsAuth }) {
           value={login}
           onChange={(e) => setLogin(e.target.value)}
           disabled={loading}
+          autoComplete="username"
         />
         <LoginInput
           type="password"
@@ -142,6 +154,7 @@ export default function LoginPage({ setIsAuth }) {
           value={password}
           onChange={(e) => setPassword(e.target.value)}
           disabled={loading}
+          autoComplete="current-password"
         />
         <LoginButton type="submit" disabled={loading}>
           {loading ? "Вход..." : "Войти"}
