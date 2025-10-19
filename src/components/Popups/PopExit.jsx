@@ -1,3 +1,4 @@
+import { useNavigate } from "react-router-dom";
 import {
   PopExitWrapper,
   PopExitContainer,
@@ -8,7 +9,23 @@ import {
   PopExitButtonNo,
 } from "./PopExit.styled";
 
-export default function PopExit() {
+export default function PopExit({ setIsAuth, onClose }) {
+  const navigate = useNavigate();
+
+  const handleExit = () => {
+    setIsAuth(false);
+    navigate("/login", { replace: true });
+  };
+
+  const handleStay = (e) => {
+    e.preventDefault();
+    if (onClose) {
+      onClose();
+    } else {
+      navigate(-1);
+    }
+  };
+
   return (
     <PopExitWrapper id="popExit">
       <PopExitContainer>
@@ -17,11 +34,11 @@ export default function PopExit() {
             <h2>Выйти из аккаунта?</h2>
           </PopExitTitle>
           <PopExitForm id="formExit" action="#">
-            <PopExitButtonYes className="_hover01" id="exitYes">
-              <a href="modal/signin.html">Да, выйти</a>
+            <PopExitButtonYes id="exitYes" onClick={handleExit}>
+              Да, выйти
             </PopExitButtonYes>
-            <PopExitButtonNo className="_hover03" id="exitNo">
-              <a href="main.html">Нет, остаться</a>
+            <PopExitButtonNo id="exitNo" onClick={handleStay}>
+              Нет, остаться
             </PopExitButtonNo>
           </PopExitForm>
         </PopExitBlock>
