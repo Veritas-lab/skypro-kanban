@@ -2,8 +2,9 @@ import styled from "styled-components";
 import { GlobalStyles } from "../Styles/GlobalStyles";
 import { useNavigate } from "react-router-dom";
 import { Link } from "react-router-dom";
-import { useState } from "react";
-import { signIn } from "../services/api";
+import { useState, useContext } from "react";
+import { loginUser } from "../services/auth";
+import { AuthContext } from "../context/AuthContext";
 
 const LoginWrapper = styled.div`
   width: 100%;
@@ -17,8 +18,8 @@ const LoginWrapper = styled.div`
 const LoginForm = styled.form`
   background-color: #ffffff;
   max-width: 368px;
-  width: 100%;
-  padding: 50px 60px;
+  max-height: 329px;
+  padding: 50px 60px 50px 60px;
   text-align: center;
   border-radius: 10px;
   box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
@@ -30,12 +31,6 @@ const LoginInput = styled.input`
   margin: 10px 0;
   border: 1px solid #ccc;
   border-radius: 4px;
-  font-size: 14px;
-
-  &:focus {
-    outline: none;
-    border-color: #565eef;
-  }
 `;
 
 const LoginButton = styled.button`
@@ -46,26 +41,18 @@ const LoginButton = styled.button`
   border: none;
   border-radius: 4px;
   cursor: pointer;
-  font-size: 14px;
-  margin-top: 10px;
 
   &:hover {
     background-color: #33399b;
   }
-
-  &:disabled {
-    background-color: #94a6be;
-    cursor: not-allowed;
-  }
 `;
 
 const LoginDescription = styled.p`
-  margin: 15px 0 0 0;
-  color: #94a6be;
-  font-size: 14px;
+  margin: 10px 0;
+  color: #94a6be66;
 
   a {
-    color: #565eef;
+    color: inherit;
     text-decoration: none;
 
     &:hover {
@@ -74,63 +61,32 @@ const LoginDescription = styled.p`
   }
 `;
 
-const ErrorMessage = styled.div`
-  color: #ff0000;
-  font-size: 14px;
-  margin: 10px 0;
-  padding: 8px;
-  background-color: #ffe6e6;
-  border-radius: 4px;
-  border: 1px solid #ffcccc;
+const ErrorMessage = styled.p`
+  color: #ff3333;
+  font-size: 12px;
+  margin-top: 5px;
 `;
 
-export default function LoginPage({ setIsAuth }) {
+export default function LoginPage() {
   const navigate = useNavigate();
-  const [login, setLogin] = useState("");
-  const [password, setPassword] = useState("");
+  const { login } = useContext(AuthContext);
+  const [formLogin, setFormLogin] = useState("");
+  const [formPassword, setFormPassword] = useState("");
   const [error, setError] = useState("");
-  const [loading, setLoading] = useState(false);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    setLoading(true);
     setError("");
 
     try {
-      // Валидация полей
-      if (!login.trim() || !password.trim()) {
-        setError("Все поля обязательны для заполнения");
-        setLoading(false);
-        return;
-      }
-
-      console.log("Отправка данных:", { login, password }); // Для отладки
-
-      const userData = await signIn({
-        login: login.trim(),
-        password: password.trim(),
+      const userData = await loginUser({
+        login: formLogin,
+        password: formPassword,
       });
-
-      console.log("Ответ от сервера:", userData); // Для отладки
-
-      // Сохраняем данные пользователя в localStorage
-      localStorage.setItem(
-        "userInfo",
-        JSON.stringify({
-          token: userData.token,
-          user: userData.user,
-        })
-      );
-
-      setIsAuth(true);
-      navigate("/", { replace: true });
+      login(userData);
+      navigate("/");
     } catch (err) {
-      console.error("Ошибка входа:", err); // Для отладки
-      setError(
-        err.message || "Произошла ошибка при входе. Проверьте логин и пароль."
-      );
-    } finally {
-      setLoading(false);
+      setError(err.message || "Ошибка авторизации. Проверьте логин и пароль.");
     }
   };
 
@@ -139,26 +95,20 @@ export default function LoginPage({ setIsAuth }) {
       <GlobalStyles />
       <LoginForm onSubmit={handleSubmit}>
         <h2>Вход</h2>
-        {error && <ErrorMessage>{error}</ErrorMessage>}
         <LoginInput
           type="text"
-          placeholder="Логин"
-          value={login}
-          onChange={(e) => setLogin(e.target.value)}
-          disabled={loading}
-          autoComplete="username"
+          placeholder="Эл.почта"
+          value={formLogin}
+          onChange={(e) => setFormLogin(e.target.value)}
         />
         <LoginInput
           type="password"
           placeholder="Пароль"
-          value={password}
-          onChange={(e) => setPassword(e.target.value)}
-          disabled={loading}
-          autoComplete="current-password"
+          value={formPassword}
+          onChange={(e) => setFormPassword(e.target.value)}
         />
-        <LoginButton type="submit" disabled={loading}>
-          {loading ? "Вход..." : "Войти"}
-        </LoginButton>
+        {error && <ErrorMessage>{error}</ErrorMessage>}
+        <LoginButton type="submit">Войти</LoginButton>
         <LoginDescription>
           Нужно зарегистрироваться?{" "}
           <Link to="/register">Регистрируйтесь здесь</Link>
