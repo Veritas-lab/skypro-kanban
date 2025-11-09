@@ -1,18 +1,22 @@
-import styled, { css } from "styled-components";
+import styled from "styled-components";
 
-const themeStyles = {
-  webDesign: css`
-    background-color: #ffe4c2;
-    color: #ff6d00;
-  `,
-  research: css`
-    background-color: #b4fdd1;
-    color: #06b16e;
-  `,
-  copywriting: css`
-    background-color: #e9d4ff;
-    color: #9a48f1;
-  `,
+const getThemeStyles = (theme, isDarkMode) => {
+  const themes = {
+    webdesign: {
+      background: isDarkMode ? "#8B4513" : "#ffe4c2",
+      color: isDarkMode ? "#ffa726" : "#ff6d00",
+    },
+    research: {
+      background: isDarkMode ? "#1b5e20" : "#b4fdd1",
+      color: isDarkMode ? "#4caf50" : "#06b16e",
+    },
+    copywriting: {
+      background: isDarkMode ? "#4a148c" : "#e9d4ff",
+      color: isDarkMode ? "#ba68c8" : "#9a48f1",
+    },
+  };
+
+  return themes[theme] || themes.webdesign;
 };
 
 export const CardItem = styled.div`
@@ -23,18 +27,25 @@ export const CardItem = styled.div`
 export const CardWrapper = styled.div`
   width: 220px;
   height: 130px;
-  background-color: #ffffff;
+  background-color: var(--background-secondary);
   border-radius: 10px;
   display: flex;
   flex-direction: column;
   align-items: flex-start;
   justify-content: stretch;
   padding: 15px 13px 19px;
+  border: 1px solid var(--border-color);
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+
+  &:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px var(--shadow-color);
+  }
 
   @media screen and (max-width: 1200px) {
     width: 220px;
     height: 130px;
-    background-color: #ffffff;
+    background-color: var(--background-secondary);
     border-radius: 10px;
     display: flex;
     flex-direction: column;
@@ -53,13 +64,17 @@ export const CardGroup = styled.div`
   justify-content: space-between;
 `;
 
-export const CardTheme = styled.div`
+export const CardTheme = styled.div.attrs((props) => ({
+  $isDarkMode: props.$isDarkMode || false,
+  $theme: props.$theme || "webdesign",
+}))`
   width: auto;
   height: 20px;
   padding: 5px 14px;
   border-radius: 18px;
-
-  ${({ theme }) => themeStyles[theme] || themeStyles.webDesign}
+  background-color: ${(props) =>
+    getThemeStyles(props.$theme, props.$isDarkMode).background};
+  color: ${(props) => getThemeStyles(props.$theme, props.$isDarkMode).color};
 
   p {
     font-size: 10px;
@@ -80,7 +95,7 @@ export const CardButton = styled.a`
     width: 4px;
     height: 4px;
     border-radius: 50%;
-    background-color: #94a6be;
+    background-color: var(--text-secondary);
   }
 `;
 
@@ -96,7 +111,7 @@ export const CardTitle = styled.h3`
   font-size: 14px;
   font-weight: 500;
   line-height: 18px;
-  color: #000000;
+  color: var(--text-primary);
   margin-bottom: 10px;
 `;
 
@@ -107,13 +122,16 @@ export const CardDate = styled.div`
 
   svg {
     width: 13px;
+    path {
+      stroke: var(--text-secondary);
+    }
   }
 
   p {
     margin-left: 6px;
     font-size: 10px;
     line-height: 13px;
-    color: #94a6be;
+    color: var(--text-secondary);
     letter-spacing: 0.2px;
   }
 `;

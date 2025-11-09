@@ -1,3 +1,4 @@
+// auth.js
 import axios from "axios";
 
 const BASE_URL = "https://wedev-api.sky.pro/api/";
@@ -5,11 +6,7 @@ const BASE_URL = "https://wedev-api.sky.pro/api/";
 // Регистрация
 export const registerUser = async (userData) => {
   try {
-    const response = await axios.post(`${BASE_URL}user`, userData, {
-      headers: {
-        "Content-Type": "",
-      },
-    });
+    const response = await axios.post(`${BASE_URL}user`, userData);
     return response.data.user;
   } catch (error) {
     throw error.response
@@ -21,11 +18,7 @@ export const registerUser = async (userData) => {
 // Логин
 export const loginUser = async (credentials) => {
   try {
-    const response = await axios.post(`${BASE_URL}user/login`, credentials, {
-      headers: {
-        "Content-Type": "",
-      },
-    });
+    const response = await axios.post(`${BASE_URL}user/login`, credentials);
     return response.data.user;
   } catch (error) {
     throw error.response

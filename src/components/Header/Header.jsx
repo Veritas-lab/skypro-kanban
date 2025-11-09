@@ -1,52 +1,74 @@
+import { useState, useContext } from "react";
 import { Link } from "react-router-dom";
-import { useState } from "react";
-import PopUser from "../Popups/PopUser";
 import {
-  HeaderWrapper,
   HeaderBlock,
-  HeaderLogo,
-  HeaderNav,
-  HeaderButtonNew,
-  HeaderUser,
+  HeaderWrapper,
+  Logo,
+  Navigation,
+  UserButton,
+  ThemeToggleButton,
+  PopupExitContainer,
+  PopupExitContent,
+  PopupTitle,
+  ButtonGroup,
+  ConfirmButton,
+  CancelButton,
 } from "./Header.styled";
+import { AuthContext } from "../../context/AuthContext";
+import { useTheme } from "../../context/ThemeProvider";
 
-export default function Header() {
-  const [isUserPopupOpen, setIsUserPopupOpen] = useState(false);
-  const toggleUserPopup = () => {
-    setIsUserPopupOpen(!isUserPopupOpen);
+export default function Header({ onLogout }) {
+  const { user } = useContext(AuthContext);
+  const { isDarkMode, toggleTheme } = useTheme();
+  const [showExitPopup, setShowExitPopup] = useState(false);
+
+  const handleLogoutClick = () => {
+    setShowExitPopup(true);
+  };
+
+  const handleConfirmLogout = () => {
+    onLogout();
+    setShowExitPopup(false);
+  };
+
+  const handleCancelLogout = () => {
+    setShowExitPopup(false);
   };
 
   return (
-    <HeaderWrapper className="header">
-      <div className="container">
-        <HeaderBlock>
-          <HeaderLogo className="_show _light">
-            <Link to="/">
-              <img src="../public/images/logo.png" alt="logo" />
-            </Link>
-          </HeaderLogo>
-          <HeaderLogo className="_dark">
-            <Link to="/">
-              <img src="../public/images/logo_dark.png" alt="logo" />
-            </Link>
-          </HeaderLogo>
-          <HeaderNav>
-            <HeaderButtonNew id="btnMainNew">
-              <Link to="/new">Создать новую задачу</Link>
-            </HeaderButtonNew>
-            <HeaderUser
-              href="#user-set-target"
-              onClick={(e) => {
-                e.preventDefault();
-                toggleUserPopup();
-              }}
-            >
-              Ivan Ivanov
-            </HeaderUser>
-            {isUserPopupOpen && <PopUser onClose={toggleUserPopup} />}
-          </HeaderNav>
-        </HeaderBlock>
-      </div>
-    </HeaderWrapper>
+    <>
+      <HeaderBlock>
+        <div className="container">
+          <HeaderWrapper>
+            <Logo>Kanban</Logo>
+            <Navigation>
+              <ThemeToggleButton onClick={toggleTheme}>
+                {isDarkMode ? "Светлая тема" : "Темная тема"}
+              </ThemeToggleButton>
+              <Link to="/new">
+                <UserButton>Создать задачу</UserButton>
+              </Link>
+              <UserButton onClick={handleLogoutClick}>
+                Выйти ({user?.name || user?.login})
+              </UserButton>
+            </Navigation>
+          </HeaderWrapper>
+        </div>
+      </HeaderBlock>
+
+      {showExitPopup && (
+        <PopupExitContainer>
+          <PopupExitContent>
+            <PopupTitle>Вы действительно хотите выйти?</PopupTitle>
+            <ButtonGroup>
+              <ConfirmButton onClick={handleConfirmLogout}>
+                Да, выйти
+              </ConfirmButton>
+              <CancelButton onClick={handleCancelLogout}>Отмена</CancelButton>
+            </ButtonGroup>
+          </PopupExitContent>
+        </PopupExitContainer>
+      )}
+    </>
   );
 }

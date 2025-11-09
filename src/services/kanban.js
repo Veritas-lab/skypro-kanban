@@ -1,98 +1,85 @@
-import axios from "axios";
+// kanban.js
+const API_URL = "https://wedev-api.sky.pro/api/kanban";
 
-const BASE_URL = "https://wedev-api.sky.pro/api/";
-
-const getAuthHeaders = (token) => ({
-  headers: {
-    Authorization: `Bearer ${token}`,
-    "Content-Type": "",
-  },
-});
-
-// Получение списка задач
 export const getTasks = async (token) => {
   try {
-    const response = await axios.get(
-      `${BASE_URL}kanban`,
-      getAuthHeaders(token)
-    );
-    if (response.data && response.data.tasks) {
-      return response.data.tasks;
+    const response = await fetch(`${API_URL}`, {
+      method: "GET",
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
+
+    if (!response.ok) {
+      throw new Error("Ошибка загрузки задач");
     }
-    throw new Error("Некорректный ответ от сервера");
+
+    const tasks = await response.json();
+    return tasks;
   } catch (error) {
-    const errorMessage =
-      error.response?.data?.error ||
-      error.message ||
-      "Не удалось получить задачи";
-    throw new Error(errorMessage);
+    throw new Error(error.message || "Ошибка сети");
   }
 };
 
-// Получение задачи по ID
-export const getTaskById = async (id, token) => {
+export const createTask = async (taskData, token) => {
   try {
-    const response = await axios.get(
-      `${BASE_URL}kanban/${id}`,
-      getAuthHeaders(token)
-    );
-    return response.data.task;
+    const response = await fetch(`${API_URL}`, {
+      method: "POST",
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+      body: taskData,
+    });
+
+    if (!response.ok) {
+      const errorData = await response.json();
+      throw new Error(errorData.message || "Ошибка создания задачи");
+    }
+
+    const newTask = await response.json();
+    return newTask;
   } catch (error) {
-    const errorMessage =
-      error.response?.data?.error || error.message || "Failed to fetch task";
-    throw new Error(errorMessage);
+    throw new Error(error.message || "Ошибка сети");
   }
 };
 
-// Добавление новой задачи
-export const addTask = async (taskData, token) => {
+export const updateTask = async (taskId, taskData, token) => {
   try {
-    const response = await axios.post(
-      `${BASE_URL}kanban`,
-      taskData,
-      getAuthHeaders(token)
-    );
-    return response.data.tasks;
+    const response = await fetch(`${API_URL}/${taskId}`, {
+      method: "PUT",
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+      body: taskData,
+    });
+
+    if (!response.ok) {
+      const errorData = await response.json();
+      throw new Error(errorData.message || "Ошибка обновления задачи");
+    }
+
+    const updatedTask = await response.json();
+    return updatedTask;
   } catch (error) {
-    const errorMessage =
-      error.response?.data?.error ||
-      error.message ||
-      "Не удалось добавить задачу";
-    throw new Error(errorMessage);
+    throw new Error(error.message || "Ошибка сети");
   }
 };
 
-// Обновление задачи
-export const updateTask = async (id, taskData, token) => {
+export const deleteTask = async (taskId, token) => {
   try {
-    const response = await axios.put(
-      `${BASE_URL}kanban/${id}`,
-      taskData,
-      getAuthHeaders(token)
-    );
-    return response.data.tasks;
-  } catch (error) {
-    const errorMessage =
-      error.response?.data?.error ||
-      error.message ||
-      "Не удалось обновить задачу";
-    throw new Error(errorMessage);
-  }
-};
+    const response = await fetch(`${API_URL}/${taskId}`, {
+      method: "DELETE",
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
 
-// Удаление задачи
-export const deleteTask = async (id, token) => {
-  try {
-    const response = await axios.delete(
-      `${BASE_URL}kanban/${id}`,
-      getAuthHeaders(token)
-    );
-    return response.data.tasks;
+    if (!response.ok) {
+      throw new Error("Ошибка удаления задачи");
+    }
+
+    return true;
   } catch (error) {
-    const errorMessage =
-      error.response?.data?.error ||
-      error.message ||
-      "Не удалось удалить задачу";
-    throw new Error(errorMessage);
+    throw new Error(error.message || "Ошибка сети");
   }
 };
