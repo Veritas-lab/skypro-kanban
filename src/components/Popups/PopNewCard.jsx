@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import Calendar from "../Calendar/Calendar";
+import Calendar from "../Calendar";
 
 export default function PopNewCard({ onAddCard }) {
   const navigate = useNavigate();

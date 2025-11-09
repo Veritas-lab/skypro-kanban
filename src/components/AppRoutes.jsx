@@ -1,6 +1,4 @@
-// AppRoutes.jsx
 import { Routes, Route, Navigate } from "react-router-dom";
-import { useState, useEffect } from "react";
 import MainPage from "../pages/MainPage";
 import LoginPage from "../pages/LoginPage";
 import RegisterPage from "../pages/RegisterPage";
@@ -14,31 +12,30 @@ function ProtectedRoute({ isAuth, children }) {
   return isAuth ? children : <Navigate to="/login" replace />;
 }
 
+function PublicRoute({ isAuth, children }) {
+  return !isAuth ? children : <Navigate to="/" replace />;
+}
+
 export default function AppRoutes({
   cards,
   onAddCard,
-  onUpdateCards,
   onLoadTasks,
   loading,
+  isAuth,
+  onAuthChange,
 }) {
-  const [isAuth, setIsAuth] = useState(!!localStorage.getItem("userInfo"));
-
-  useEffect(() => {
-    const checkAuth = () => {
-      const userInfo = JSON.parse(localStorage.getItem("userInfo"));
-      setIsAuth(!!userInfo?.token);
-    };
-    checkAuth();
-    window.addEventListener("storage", checkAuth);
-    return () => window.removeEventListener("storage", checkAuth);
-  }, []);
+  // Функция для выхода
+  const handleLogout = () => {
+    localStorage.removeItem("userInfo");
+    onAuthChange(false);
+  };
 
   return (
     <Routes>
       <Route
         element={
           <ProtectedRoute isAuth={isAuth}>
-            <Layout setIsAuth={setIsAuth} />
+            <Layout onLogout={handleLogout} />
           </ProtectedRoute>
         }
       >
@@ -46,10 +43,8 @@ export default function AppRoutes({
           path="/"
           element={
             <MainPage
-              setIsAuth={setIsAuth}
               cards={cards}
               onAddCard={onAddCard}
-              onUpdateCards={onUpdateCards}
               onLoadTasks={onLoadTasks}
               loading={loading}
             />
@@ -57,13 +52,25 @@ export default function AppRoutes({
         >
           <Route path="card/:id" element={<PopBrowse />} />
           <Route path="new" element={<PopNewCardPage />} />
-          <Route path="exit" element={<ExitPage setIsAuth={setIsAuth} />} />
+          <Route path="exit" element={<ExitPage onLogout={handleLogout} />} />
         </Route>
       </Route>
-      <Route path="/login" element={<LoginPage setIsAuth={setIsAuth} />} />
+
+      <Route
+        path="/login"
+        element={
+          <PublicRoute isAuth={isAuth}>
+            <LoginPage onAuthChange={onAuthChange} />
+          </PublicRoute>
+        }
+      />
       <Route
         path="/register"
-        element={<RegisterPage setIsAuth={setIsAuth} />}
+        element={
+          <PublicRoute isAuth={isAuth}>
+            <RegisterPage onAuthChange={onAuthChange} />
+          </PublicRoute>
+        }
       />
       <Route path="*" element={<NotFoundPage />} />
     </Routes>
