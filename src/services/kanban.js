@@ -27,8 +27,9 @@ export const createTask = async (taskData, token) => {
       method: "POST",
       headers: {
         Authorization: `Bearer ${token}`,
+        "Content-Type": "application/json",
       },
-      body: taskData,
+      body: JSON.stringify(taskData),
     });
 
     if (!response.ok) {
@@ -43,14 +44,18 @@ export const createTask = async (taskData, token) => {
   }
 };
 
+// Алиас для обратной совместимости
+export const addTask = createTask;
+
 export const updateTask = async (taskId, taskData, token) => {
   try {
     const response = await fetch(`${API_URL}/${taskId}`, {
       method: "PUT",
       headers: {
         Authorization: `Bearer ${token}`,
+        "Content-Type": "application/json",
       },
-      body: taskData,
+      body: JSON.stringify(taskData),
     });
 
     if (!response.ok) {

@@ -1,9 +1,9 @@
-import Calendar from "../Calendar/Calendar";
-import { useNavigate } from "react-router-dom";
 import { useState, useContext } from "react";
-import { addTask } from "../../services/kanban";
+import { useNavigate } from "react-router-dom";
 import { AuthContext } from "../../context/AuthContext";
 import { TaskContext } from "../../context/TaskContext";
+import { createTask } from "../../services/kanban";
+import Calendar from "../Calendar/Calendar";
 
 export default function PopNewCard() {
   const navigate = useNavigate();
@@ -52,18 +52,17 @@ export default function PopNewCard() {
     try {
       setIsSubmitting(true);
 
-      await addTask(formData, user.token);
+      // Используем createTask вместо addTask
+      const newTask = await createTask(formData, user.token);
 
-      const tempTask = {
-        id: Date.now(),
-        title: formData.title,
-        topic: formData.topic,
-        description: formData.description,
-        status: formData.status,
-        date: formatDate(formData.date),
+      // Форматируем дату для отображения в интерфейсе
+      const formattedTask = {
+        ...newTask,
+        date: formatDate(newTask.date || formData.date),
       };
 
-      addTaskToContext(tempTask);
+      // Добавляем задачу в контекст
+      addTaskToContext(formattedTask);
       navigate(-1);
     } catch (error) {
       alert("Ошибка создания задачи: " + error.message);
@@ -109,6 +108,7 @@ export default function PopNewCard() {
                     value={formData.title}
                     onChange={handleChange}
                     disabled={isSubmitting}
+                    required
                   />
                 </div>
                 <div className="form-new__block">
@@ -173,7 +173,7 @@ export default function PopNewCard() {
               className="form-new__create _hover01"
               type="submit"
               form="formNewCard"
-              disabled={isSubmitting}
+              disabled={isSubmitting || !formData.title.trim()}
             >
               {isSubmitting ? "Создание..." : "Создать задачу"}
             </button>
