@@ -35,7 +35,7 @@ export const PopBrowse = () => {
   const { _id } = useParams();
   const { tasks, setTasks } = useContext(TasksContext);
   const [isEditing, setIsEditing] = useState(false);
-  const [, setLoading] = useState(true);
+  const [loading, setLoading] = useState(true);
   const [editableTask, setEditableTask] = useState({
     date: "",
     description: "",
