@@ -17,7 +17,7 @@ import {
   PopBrowseTopBlock,
   PopBrowseTtl,
 } from "../PopBrowse/PopBrowse.styled";
-import { CardDate, CardDateP, CardDateSvg } from "../Date/Date/date.styles";
+import { CardDate, CardDateP, CardDateSvg } from "../Date/Date/Date.styles";
 import { format } from "date-fns";
 import { ru } from "date-fns/locale";
 
