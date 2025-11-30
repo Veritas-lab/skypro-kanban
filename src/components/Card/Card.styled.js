@@ -24,24 +24,20 @@ export const CardsItem = styled.div`
 
 export const CardsCard = styled.div`
   width: 220px;
-  height: 150px; /* Увеличиваем высоту для статуса */
-  background-color: #ffffff;
+  height: 150px;
+  background-color: ${(props) => props.theme.cardBg};
   border-radius: 10px;
   display: flex;
   flex-direction: column;
   align-items: flex-start;
   justify-content: stretch;
   padding: 15px 13px 19px;
+  box-shadow: ${(props) => props.theme.shadow};
+  transition: all 0.3s ease;
+
   @media screen and (max-width: 1200px) {
     width: 220px;
     height: 150px;
-    background-color: #ffffff;
-    border-radius: 10px;
-    display: flex;
-    flex-direction: column;
-    align-items: flex-start;
-    justify-content: stretch;
-    padding: 15px 13px 19px;
   }
 `;
 
@@ -84,11 +80,11 @@ export const CardBtnDiv = styled.div`
   width: 4px;
   height: 4px;
   border-radius: 50%;
-  background-color: #94a6be;
+  background-color: ${(props) => props.theme.textSecondary};
 `;
 
 export const CardContent = styled.div`
-  height: 80px; /* Увеличиваем высоту */
+  height: 80px;
   display: flex;
   flex-direction: column;
   align-items: flex-start;
@@ -99,7 +95,7 @@ export const CardTitle = styled.h3`
   font-size: 14px;
   font-weight: 500;
   line-height: 18px;
-  color: #000000;
+  color: ${(props) => props.theme.textColor};
   margin-bottom: 8px;
 `;
 
@@ -109,40 +105,53 @@ export const CardDate = styled.div`
   justify-content: flex-start;
 `;
 
+export const CardDateP = styled.p`
+  margin-left: 6px;
+  font-size: 10px;
+  line-height: 13px;
+  color: ${(props) => props.theme.textSecondary};
+  letter-spacing: 0.2px;
+`;
+
 /* Новые стили для селектора статуса */
 export const StatusSelect = styled.select`
   width: 100%;
   padding: 4px 8px;
-  border: 1px solid #94a6be;
+  border: 1px solid ${(props) => props.theme.borderColor};
   border-radius: 4px;
   font-size: 12px;
-  background-color: white;
+  background-color: ${(props) => props.theme.backgroundColor};
+  color: ${(props) => props.theme.textColor};
   cursor: pointer;
   margin-bottom: 8px;
 
   &:focus {
     outline: none;
-    border-color: #4d5bf9;
+    border-color: ${(props) => props.theme.primaryColor};
   }
 `;
 
 export const StatusOption = styled.option`
   font-size: 12px;
   padding: 4px;
+  background-color: ${(props) => props.theme.cardBg};
+  color: ${(props) => props.theme.textColor};
 `;
 
 export const StatusDisplay = styled.div`
   padding: 4px 8px;
-  background-color: #f0f0f0;
+  background-color: ${(props) => props.theme.backgroundColor};
   border-radius: 4px;
   font-size: 12px;
   cursor: pointer;
-  border: 1px dashed #ccc;
+  border: 1px dashed ${(props) => props.theme.borderColor};
   margin-bottom: 8px;
   width: 100%;
   box-sizing: border-box;
+  color: ${(props) => props.theme.textColor};
 
   &:hover {
-    background-color: #e0e0e0;
+    background-color: ${(props) => props.theme.primaryColor};
+    color: #ffffff;
   }
 `;

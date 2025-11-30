@@ -34,12 +34,12 @@ export const PopBrowseContainer = styled.div`
 export const PopBrowseBlock = styled.div`
   display: block;
   margin: 0 auto;
-  background-color: #ffffff;
+  background-color: ${(props) => props.theme.cardBg};
   max-width: 650px;
   width: 100%;
   padding: 40px 30px 38px;
   border-radius: 10px;
-  border: 0.7px solid #d4dbe5;
+  border: 0.7px solid ${(props) => props.theme.borderColor};
   position: relative;
   @media screen and (max-width: 660px) {
     border-radius: 0;
@@ -66,11 +66,12 @@ export const PopBrowseTopBlock = styled.div`
 `;
 
 export const PopBrowseTtl = styled.h3`
-  color: #000;
+  color: ${(props) => props.theme.textColor};
   font-size: 20px;
   font-weight: 600;
   line-height: 24px;
 `;
+
 export const PopBrowseStatus = styled.div``;
 
 export const Categories = styled.div`
@@ -83,8 +84,10 @@ export const CategoriesThemes = styled.div`
   align-items: flex-start;
   justify-content: flex-start;
 `;
+
 export const CategoriesP = styled.p`
   margin-bottom: 14px;
+  color: ${(props) => props.theme.textColor};
 `;
 
 export const CategoriesTheme = styled.div`
@@ -103,6 +106,7 @@ export const CategoriesTheme = styled.div`
     opacity: 0.7;
   }
 `;
+
 export const ActiveCategory = styled.p`
   opacity: 1 !important;
 `;
@@ -132,6 +136,7 @@ export const Status = styled.div`
 
 export const StatusP = styled.p`
   margin-bottom: 14px;
+  color: ${(props) => props.theme.textColor};
 `;
 
 export const StatusThemes = styled.div`
@@ -155,10 +160,11 @@ export const StatusThemeP = styled.p`
   font-size: 14px;
   line-height: 1;
   letter-spacing: -0.14px;
+  color: #ffffff;
 `;
 
 export const Subttl = styled.p`
-  color: #000;
+  color: ${(props) => props.theme.textColor};
   font-size: 14px;
   font-weight: 600;
   line-height: 1;
@@ -218,10 +224,17 @@ export const PopBrowseBtnEdit = styled.button`
   margin-bottom: 10px;
   padding: 0 14px;
   margin-right: 8px;
+  background-color: ${(props) => props.theme.cardBg};
+  color: ${(props) => props.theme.primaryColor};
+  border: 0.7px solid ${(props) => props.theme.primaryColor};
+  border-radius: 4px;
+  cursor: pointer;
+
   &:hover {
-    background-color: #33399b;
+    background-color: ${(props) => props.theme.primaryHover};
     color: #ffffff;
   }
+
   @media screen and (max-width: 495px) {
     width: 100%;
     height: 40px;
@@ -259,28 +272,32 @@ export const FormBrowseArea = styled.textarea`
   width: 100%;
   outline: none;
   padding: 14px;
-  background: #eaeef6;
-  border: 0.7px solid rgba(148, 166, 190, 0.4);
+  background: ${(props) => props.theme.backgroundColor};
+  border: 0.7px solid ${(props) => props.theme.borderColor};
   border-radius: 8px;
   font-size: 14px;
   line-height: 1;
   letter-spacing: -0.14px;
   margin-top: 14px;
   height: 200px;
+  color: ${(props) => props.theme.textColor};
+
   &::-moz-placeholder {
     font-weight: 400;
     font-size: 14px;
     line-height: 1px;
-    color: #94a6be;
+    color: ${(props) => props.theme.textSecondary};
     letter-spacing: -0.14px;
   }
+
   &::placeholder {
     font-weight: 400;
     font-size: 14px;
     line-height: 1px;
-    color: #94a6be;
+    color: ${(props) => props.theme.textSecondary};
     letter-spacing: -0.14px;
   }
+
   @media screen and (max-width: 495px) {
     max-width: 100%;
     height: 37px;
@@ -292,27 +309,31 @@ export const BtnBor = styled.button`
   margin-bottom: 10px;
   padding: 0 14px;
   margin-right: 8px;
+  border-radius: 4px;
+  border: 0.7px solid ${(props) => props.theme.primaryColor};
+  outline: none;
+  background: transparent;
+  color: ${(props) => props.theme.primaryColor};
+  cursor: pointer;
+
+  &:hover {
+    background-color: ${(props) => props.theme.primaryHover};
+    color: #ffffff;
+  }
+
   @media screen and (max-width: 495px) {
     width: 100%;
     height: 40px;
     margin-right: 0px;
   }
-  border-radius: 4px;
-  border: 0.7px solid var(--palette-navy-60, #565eef);
-  outline: none;
-  background: transparent;
-  color: #565eef;
-  &:hover {
-    background-color: #33399b;
-    color: #ffffff;
-  }
 `;
 
 export const BtnBorA = styled.p`
-  color: #565eef;
+  color: ${(props) => props.theme.primaryColor};
   font-size: 14px;
   font-weight: 600;
   line-height: 14px;
+
   &:hover {
     color: #ffffff;
   }
@@ -323,18 +344,21 @@ export const BtnBg = styled.button`
   margin-bottom: 10px;
   padding: 0 14px;
   margin-right: 0px;
+  border-radius: 4px;
+  background: ${(props) => props.theme.primaryColor};
+  border: none;
+  outline: none;
+  color: #ffffff;
+  cursor: pointer;
+
+  &:hover {
+    background-color: ${(props) => props.theme.primaryHover};
+  }
+
   @media screen and (max-width: 495px) {
     width: 100%;
     height: 40px;
     margin-right: 0px;
-  }
-  border-radius: 4px;
-  background: #565eef;
-  border: none;
-  outline: none;
-  color: #ffffff;
-  &:hover {
-    background-color: #33399b;
   }
 `;
 
@@ -352,14 +376,22 @@ export const Gray = styled.p`
 
 export const White = styled.div`
   border-radius: 24px;
-  border: 0.7px solid rgba(148, 166, 190, 0.4);
+  border: 0.7px solid ${(props) => props.theme.borderColor};
   padding: 10px 17.5px 10px;
   margin-right: 7px;
   margin-bottom: 7px;
   margin-top: 14px;
   cursor: pointer;
-  color: ${(props) => (props.$isActive ? "#ffffff" : "#94a6be")};
-  background: ${(props) => (props.$isActive ? "#94a6be" : "#ffffff")};
+  color: ${(props) =>
+    props.$isActive ? "#ffffff" : props.theme.textSecondary};
+  background: ${(props) =>
+    props.$isActive ? props.theme.primaryColor : props.theme.cardBg};
+  transition: all 0.3s ease;
+
+  &:hover {
+    background: ${(props) => props.theme.primaryColor};
+    color: #ffffff;
+  }
 `;
 
 export const ErrorPB = styled.p`

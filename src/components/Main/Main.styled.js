@@ -2,7 +2,9 @@ import styled from "styled-components";
 
 export const SMain = styled.main`
   width: 100%;
-  background-color: #eaeef6;
+  background-color: ${(props) => props.theme.backgroundColor};
+  min-height: calc(100vh - 70px);
+  transition: background-color 0.3s ease;
 `;
 
 export const MainBlock = styled.main`

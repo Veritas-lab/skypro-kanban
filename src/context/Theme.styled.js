@@ -1,0 +1,27 @@
+export const lightTheme = {
+  isDark: false,
+  primaryColor: "#565eef",
+  primaryHover: "#33399b",
+  backgroundColor: "#eaeef6",
+  headerBg: "#ffffff",
+  cardBg: "#ffffff",
+  textColor: "#000000",
+  textSecondary: "#94a6be",
+  borderColor: "#e6e6e6",
+  toggleHoverBg: "#f0f0f0",
+  shadow: "0px 4px 25px 0px rgba(0, 0, 0, 0.10)",
+};
+
+export const darkTheme = {
+  isDark: true,
+  primaryColor: "#767cff",
+  primaryHover: "#5a60d5",
+  backgroundColor: "#1a1a1a",
+  headerBg: "#2d2d2d",
+  cardBg: "#3d3d3d",
+  textColor: "#ffffff",
+  textSecondary: "#a0a0a0",
+  borderColor: "#404040",
+  toggleHoverBg: "#404040",
+  shadow: "0px 4px 25px 0px rgba(0, 0, 0, 0.3)",
+};

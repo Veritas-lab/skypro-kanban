@@ -3,7 +3,9 @@ import styled from "styled-components";
 export const SHeader = styled.header`
   width: 100%;
   margin: 0 auto;
-  background-color: #ffffff;
+  background-color: ${(props) => props.theme.headerBg};
+  border-bottom: 1px solid ${(props) => props.theme.borderColor};
+  transition: all 0.3s ease;
 `;
 
 export const SContainer = styled.div`
@@ -32,12 +34,17 @@ export const HeaderBlock = styled.div`
 export const HeaderLogo = styled.div`
   width: 85px;
 `;
+
 export const Img = styled.img`
   width: 85px;
 `;
-export const ShowLight = styled.div``;
+
+export const ShowLight = styled.div`
+  display: ${(props) => (props.theme.isDark ? "none" : "block")};
+`;
+
 export const Dark = styled.div`
-  display: none;
+  display: ${(props) => (props.theme.isDark ? "block" : "none")};
 `;
 
 export const HeaderNav = styled.div`
@@ -46,6 +53,7 @@ export const HeaderNav = styled.div`
   display: flex;
   align-items: center;
   justify-content: center;
+  gap: 15px;
 `;
 
 export const HeaderUser = styled.a`
@@ -56,25 +64,52 @@ export const HeaderUser = styled.a`
   justify-content: center;
   font-size: 14px;
   line-height: 20px;
-  color: #565eef;
+  color: ${(props) => props.theme.primaryColor};
   position: relative;
+  cursor: pointer;
+
   &:hover {
-    color: #33399b;
+    color: ${(props) => props.theme.primaryHover};
   }
+
   &::after {
     content: "";
     display: block;
     width: 6px;
     height: 6px;
     border-radius: 1px;
-    border-left: 1.9px solid #565eef;
-    border-bottom: 1.9px solid #565eef;
+    border-left: 1.9px solid ${(props) => props.theme.primaryColor};
+    border-bottom: 1.9px solid ${(props) => props.theme.primaryColor};
     transform: rotate(-45deg);
     margin: -6px 0 0 5px;
     padding: 0;
   }
+
   &:hover::after {
-    border-left-color: #33399b;
-    border-bottom-color: #33399b;
+    border-left-color: ${(props) => props.theme.primaryHover};
+    border-bottom-color: ${(props) => props.theme.primaryHover};
   }
+`;
+
+/* Новые стили для переключателя темы */
+export const ThemeToggle = styled.button`
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 8px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.3s ease;
+
+  &:hover {
+    background-color: ${(props) => props.theme.toggleHoverBg};
+  }
+`;
+
+export const ThemeToggleIcon = styled.span`
+  font-size: 18px;
+  transition: transform 0.3s ease;
+  transform: ${(props) => (props.$isDark ? "rotate(180deg)" : "rotate(0)")};
 `;

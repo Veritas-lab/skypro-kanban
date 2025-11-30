@@ -11,6 +11,11 @@ export const TasksProvider = ({ children }) => {
 
   useEffect(() => {
     const loadTasks = async () => {
+      if (!user?.token) {
+        setLoading(false);
+        return;
+      }
+
       setLoading(true);
       try {
         const data = await fetchTasks({ token: user.token });
@@ -23,7 +28,7 @@ export const TasksProvider = ({ children }) => {
       }
     };
     loadTasks();
-  }, [user.token]);
+  }, [user?.token]);
 
   return (
     <TasksContext.Provider value={{ tasks, setTasks, loading, error }}>

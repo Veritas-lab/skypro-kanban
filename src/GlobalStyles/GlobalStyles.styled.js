@@ -35,6 +35,16 @@ body {
   font-family: "Roboto", Arial, Helvetica, sans-serif;
   color: #000000;
 }
-`;
+
+
+body.dark-theme {
+  background-color: #1a1a1a;
+  color: #ffffff;
+}
+
+
+* {
+  transition: background-color 0.3s ease, color 0.3s ease, border-color 0.3s ease;
+}`;
 
 export default GlobalStyle;
