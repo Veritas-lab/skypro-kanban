@@ -6,7 +6,10 @@ export const Bg = styled.div`
   left: 0;
   right: 0;
   bottom: 0;
-  background: rgba(234, 238, 246, 1);
+  background: ${(props) => props.theme.backgroundColor};
+  display: flex;
+  align-items: center;
+  justify-content: center;
 `;
 
 export const Modal = styled.div`
@@ -19,25 +22,24 @@ export const Modal = styled.div`
   align-items: center;
   justify-content: center;
 `;
+
 export const FWrapper = styled.div`
   display: block;
   margin: 0 auto;
-  background-color: rgba(255, 255, 255, 1);
+  background-color: ${(props) => props.theme.cardBg};
   max-width: 368px;
   width: 100%;
   padding: 50px 60px;
   border-radius: 10px;
-  border: 0.7px solid rgba(212, 219, 229, 1);
-  box-shadow: 0px 4px 67px -12px rgba(0, 0, 0, 0.13);
+  border: 0.7px solid ${(props) => props.theme.borderColor};
+  box-shadow: ${(props) => props.theme.shadow};
 `;
 
 export const FTitle = styled.h2`
   font-weight: 700;
   font-size: 20px;
   line-height: 150%;
-  color: rgba(0, 0, 0, 1);
-  font-style: bold;
-  letter-spacing: -3%;
+  color: ${(props) => props.theme.textColor};
   text-align: center;
   margin-bottom: 20px;
 `;
@@ -62,7 +64,7 @@ export const FormGroupP = styled.div`
   font-weight: 400;
   font-size: 14px;
   line-height: 150%;
-  color: rgba(148, 166, 190, 0.4);
+  color: ${(props) => props.theme.textSecondary};
   letter-spacing: -1%;
   text-align: center;
 `;
@@ -71,8 +73,13 @@ export const FormGroupPLink = styled.p`
   font-weight: 400;
   font-size: 14px;
   line-height: 150%;
-  color: rgba(148, 166, 190, 0.4);
+  color: ${(props) => props.theme.primaryColor};
   letter-spacing: -1%;
-  text-decoration: underline rgba(148, 166, 190, 0.4);
+  text-decoration: underline;
   text-align: center;
+  cursor: pointer;
+
+  &:hover {
+    color: ${(props) => props.theme.primaryHover};
+  }
 `;

@@ -10,6 +10,10 @@ export const lightTheme = {
   borderColor: "#e6e6e6",
   toggleHoverBg: "#f0f0f0",
   shadow: "0px 4px 25px 0px rgba(0, 0, 0, 0.10)",
+  inputBg: "#ffffff",
+  modalBg: "#ffffff",
+  successColor: "#06b16e",
+  errorColor: "#ff3333",
 };
 
 export const darkTheme = {
@@ -24,4 +28,8 @@ export const darkTheme = {
   borderColor: "#404040",
   toggleHoverBg: "#404040",
   shadow: "0px 4px 25px 0px rgba(0, 0, 0, 0.3)",
+  inputBg: "#2d2d2d",
+  modalBg: "#3d3d3d",
+  successColor: "#4caf50",
+  errorColor: "#ff6b6b",
 };

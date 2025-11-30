@@ -1,8 +1,7 @@
 import React from "react";
 import { Routes, Route, Navigate } from "react-router-dom";
 import { ThemeProvider as StyledThemeProvider } from "styled-components";
-import { ThemeProvider } from "./context/ThemeContext";
-import { useTheme } from "./context/ThemeContext";
+import { ThemeProvider, useTheme } from "./context/ThemeContext";
 import { lightTheme, darkTheme } from "./context/Theme.styled";
 import Header from "./components/Header/Header";
 import Main from "./components/Main/Main";
@@ -12,24 +11,25 @@ import AuthForm from "./components/AuthForm/AuthForm";
 import PopNewCard from "./components/PopNewCard/PopNewCard";
 import PopBrowse from "./components/PopBrowse/PopBrowse";
 import PopExit from "./components/PopExit/PopExit";
+import GlobalStyle from "./GlobalStyles/GlobalStyles.styled";
 
-// Компонент-обертка для styled-components ThemeProvider
 const StyledThemeWrapper = ({ children }) => {
   const { isDarkTheme } = useTheme();
   const currentTheme = isDarkTheme ? darkTheme : lightTheme;
 
   return (
-    <StyledThemeProvider theme={currentTheme}>{children}</StyledThemeProvider>
+    <StyledThemeProvider theme={currentTheme}>
+      <GlobalStyle /> {/* Добавьте GlobalStyle здесь */}
+      {children}
+    </StyledThemeProvider>
   );
 };
 
-// Компонент для защищенных маршрутов
 const ProtectedRoute = ({ children }) => {
   const { user } = useAuth();
   return user ? children : <Navigate to="/sign-in" />;
 };
 
-// Основной компонент с маршрутами
 const AppContent = () => {
   const { user } = useAuth();
 
@@ -37,7 +37,6 @@ const AppContent = () => {
     <>
       {user && <Header />}
       <Routes>
-        {/* Публичные маршруты */}
         <Route
           path="/sign-in"
           element={!user ? <AuthForm /> : <Navigate to="/" />}
@@ -46,8 +45,6 @@ const AppContent = () => {
           path="/sign-up"
           element={!user ? <AuthForm isSignUp={true} /> : <Navigate to="/" />}
         />
-
-        {/* Защищенные маршруты */}
         <Route
           path="/"
           element={
@@ -82,8 +79,6 @@ const AppContent = () => {
             </ProtectedRoute>
           }
         />
-
-        {/* Резервный маршрут */}
         <Route path="*" element={<Navigate to={user ? "/" : "/sign-in"} />} />
       </Routes>
     </>

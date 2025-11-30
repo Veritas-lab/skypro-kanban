@@ -1,50 +1,42 @@
 import { createGlobalStyle } from "styled-components";
 
 const GlobalStyle = createGlobalStyle`
-* {
-  margin: 0;
-  padding: 0;
-  box-sizing: border-box;
-}
+  body {
+    background-color: ${(props) => props.theme.backgroundColor};
+    color: ${(props) => props.theme.textColor};
+    transition: background-color 0.3s ease, color 0.3s ease;
+    margin: 0;
+    padding: 0;
+    font-family: "Roboto", Arial, Helvetica, sans-serif;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
 
-*:before,
-*:after {
-  box-sizing: border-box;
-}
+  * {
+    transition: background-color 0.3s ease, 
+                color 0.3s ease, 
+                border-color 0.3s ease,
+                box-shadow 0.3s ease;
+  }
 
-a,
-a:visited {
-  text-decoration: none;
-  cursor: pointer;
-}
+  a, a:visited {
+    text-decoration: none;
+    cursor: pointer;
+    color: inherit;
+  }
 
-button,
-._btn {
-  cursor: pointer;
-  outline: none;
-}
+  button {
+    cursor: pointer;
+    outline: none;
+    border: none;
+    font-family: inherit;
+  }
 
-ul li {
-  list-style: none;
-}
+  input, textarea {
+    font-family: inherit;
+    outline: none;
+  }
 
-html,
-body {
-  width: 100%;
-  height: 100%;
-  font-family: "Roboto", Arial, Helvetica, sans-serif;
-  color: #000000;
-}
-
-
-body.dark-theme {
-  background-color: #1a1a1a;
-  color: #ffffff;
-}
-
-
-* {
-  transition: background-color 0.3s ease, color 0.3s ease, border-color 0.3s ease;
-}`;
-
+  /* Дополнительные глобальные стили если нужно */
+`;
 export default GlobalStyle;
