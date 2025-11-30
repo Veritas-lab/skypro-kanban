@@ -36,10 +36,23 @@ const topicColors = {
   },
 };
 
-const Card = ({ open, card }) => {
+const Card = ({ open, card, onDragStart }) => {
   const topicStyle = topicColors[card?.topic] || {
     background: "#94a6be",
     color: "#ffffff",
+  };
+
+  const handleDragStart = (e) => {
+    if (onDragStart) {
+      onDragStart(e);
+    }
+    // Добавляем визуальный эффект при перетаскивании
+    e.currentTarget.style.opacity = "0.4";
+  };
+
+  const handleDragEnd = (e) => {
+    // Восстанавливаем нормальный вид после перетаскивания
+    e.currentTarget.style.opacity = "1";
   };
 
   return (
@@ -57,7 +70,12 @@ const Card = ({ open, card }) => {
         </PopBrowseTopBlock>
       ) : (
         <>
-          <CardsItem id={card?._id}>
+          <CardsItem
+            id={card?._id}
+            draggable="true"
+            onDragStart={handleDragStart}
+            onDragEnd={handleDragEnd}
+          >
             <CardsCard>
               <CardGroup>
                 <CardTheme $background={topicStyle.background}>
