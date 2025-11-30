@@ -41,7 +41,7 @@ const Date = () => {
           </clipPath>
         </defs>
       </CardDateSvg>
-      <CardDateP>{formatDate()}</CardDateP>
+      <CardDateP>{formatDate}</CardDateP>
     </CardDate>
   );
 };
