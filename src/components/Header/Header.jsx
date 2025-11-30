@@ -1,74 +1,50 @@
-import { useState, useContext } from "react";
 import { Link } from "react-router-dom";
+import Button from "../Button/Button";
+import PopUser from "../PopUser/PopUser";
 import {
+  Dark,
+  SHeader,
+  SContainer,
   HeaderBlock,
-  HeaderWrapper,
-  Logo,
-  Navigation,
-  UserButton,
-  ThemeToggleButton,
-  PopupExitContainer,
-  PopupExitContent,
-  PopupTitle,
-  ButtonGroup,
-  ConfirmButton,
-  CancelButton,
+  HeaderLogo,
+  HeaderNav,
+  Img,
+  HeaderUser,
 } from "./Header.styled";
+import { useContext } from "react";
 import { AuthContext } from "../../context/AuthContext";
-import { useTheme } from "../../context/ThemeProvider";
 
-export default function Header({ onLogout }) {
+const Header = ({ isModalOpen, toggleModal }) => {
   const { user } = useContext(AuthContext);
-  const { isDarkMode, toggleTheme } = useTheme();
-  const [showExitPopup, setShowExitPopup] = useState(false);
-
-  const handleLogoutClick = () => {
-    setShowExitPopup(true);
-  };
-
-  const handleConfirmLogout = () => {
-    onLogout();
-    setShowExitPopup(false);
-  };
-
-  const handleCancelLogout = () => {
-    setShowExitPopup(false);
-  };
 
   return (
-    <>
-      <HeaderBlock>
-        <div className="container">
-          <HeaderWrapper>
-            <Logo>Kanban</Logo>
-            <Navigation>
-              <ThemeToggleButton onClick={toggleTheme}>
-                {isDarkMode ? "Светлая тема" : "Темная тема"}
-              </ThemeToggleButton>
-              <Link to="/new">
-                <UserButton>Создать задачу</UserButton>
-              </Link>
-              <UserButton onClick={handleLogoutClick}>
-                Выйти ({user?.name || user?.login})
-              </UserButton>
-            </Navigation>
-          </HeaderWrapper>
-        </div>
-      </HeaderBlock>
-
-      {showExitPopup && (
-        <PopupExitContainer>
-          <PopupExitContent>
-            <PopupTitle>Вы действительно хотите выйти?</PopupTitle>
-            <ButtonGroup>
-              <ConfirmButton onClick={handleConfirmLogout}>
-                Да, выйти
-              </ConfirmButton>
-              <CancelButton onClick={handleCancelLogout}>Отмена</CancelButton>
-            </ButtonGroup>
-          </PopupExitContent>
-        </PopupExitContainer>
-      )}
-    </>
+    <SHeader>
+      <SContainer>
+        <HeaderBlock>
+          <HeaderLogo>
+            <a href="" target="_self">
+              <Img src="../images/logo.png" alt="logo" />
+            </a>
+          </HeaderLogo>
+          <HeaderLogo>
+            <Dark>
+              <a href="" target="_self">
+                <Img src="../images/logo_dark.png" alt="logo" />
+              </a>
+            </Dark>
+          </HeaderLogo>
+          <HeaderNav>
+            <Link to="/card/add">
+              {" "}
+              <Button text="Создать новую задачу" />
+            </Link>
+            <HeaderUser onClick={toggleModal}>{user.name}</HeaderUser>
+            {isModalOpen ? <PopUser isModalOpen={isModalOpen} /> : null}
+          </HeaderNav>
+        </HeaderBlock>
+      </SContainer>
+    </SHeader>
   );
-}
+};
+
+export default Header;

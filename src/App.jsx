@@ -1,22 +1,14 @@
-import AppRoutes from "./components/AppRoutes";
-import { GlobalStyles } from "./Styles/GlobalStyles";
+import "./App.css";
+import AppRoutes from "./components/AppRoutes/AppRoutes";
 import AuthProvider from "./context/AuthProvider";
-import TaskProvider from "./context/TaskProvider";
-import ThemeProvider from "./context/ThemeProvider";
+import GlobalStyle from "./GlobalStyles/GlobalStyles.styled";
 
 function App() {
   return (
-    <>
-      <GlobalStyles />
-      <ThemeProvider>
-        <AuthProvider>
-          <TaskProvider>
-            <AppRoutes />
-          </TaskProvider>
-        </AuthProvider>
-      </ThemeProvider>
-    </>
+    <AuthProvider>
+      <GlobalStyle />
+      <AppRoutes />;
+    </AuthProvider>
   );
 }
-
 export default App;

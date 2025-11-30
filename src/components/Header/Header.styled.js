@@ -1,115 +1,80 @@
-// Header.styled.js
 import styled from "styled-components";
 
-export const HeaderBlock = styled.header`
+export const SHeader = styled.header`
   width: 100%;
   margin: 0 auto;
-  background-color: var(--background-secondary);
-  padding: 12px 0;
-  border-bottom: 1px solid var(--border-color);
+  background-color: #ffffff;
 `;
 
-export const HeaderWrapper = styled.div`
+export const SContainer = styled.div`
+  max-width: 1260px;
+  width: 100%;
+  margin: 0 auto;
+  padding: 0 30px;
+  @media screen and (max-width: 495px) {
+    width: 100%;
+    padding: 0 16px;
+  }
+`;
+
+export const HeaderBlock = styled.div`
+  height: 70px;
   display: flex;
+  flex-wrap: nowrap;
   align-items: center;
   justify-content: space-between;
-`;
-
-export const Logo = styled.div`
-  font-size: 24px;
-  font-weight: 700;
-  color: var(--text-tertiary);
-`;
-
-export const Navigation = styled.nav`
-  display: flex;
-  align-items: center;
-  gap: 20px;
-`;
-
-export const UserButton = styled.button`
-  background: var(--text-tertiary);
-  color: white;
-  border: none;
-  padding: 8px 16px;
-  border-radius: 4px;
-  cursor: pointer;
-  transition: background-color 0.3s ease;
-
-  &:hover {
-    background: var(--hover-primary);
-  }
-`;
-
-export const ThemeToggleButton = styled.button`
-  background: none;
-  border: 1px solid var(--border-color);
-  color: var(--text-primary);
-  padding: 8px 12px;
-  border-radius: 4px;
-  cursor: pointer;
-  transition: all 0.3s ease;
-
-  &:hover {
-    background: var(--background-tertiary);
-  }
-`;
-
-export const PopupExitContainer = styled.div`
-  position: fixed;
+  position: relative;
   top: 0;
   left: 0;
-  width: 100%;
-  height: 100%;
-  background: rgba(0, 0, 0, 0.4);
+  padding: 0 10px;
+`;
+
+export const HeaderLogo = styled.div`
+  width: 85px;
+`;
+export const Img = styled.img`
+  width: 85px;
+`;
+export const ShowLight = styled.div``;
+export const Dark = styled.div`
+  display: none;
+`;
+
+export const HeaderNav = styled.div`
+  max-width: 290px;
+  padding: 0;
   display: flex;
   align-items: center;
   justify-content: center;
-  z-index: 1000;
 `;
 
-export const PopupExitContent = styled.div`
-  background: var(--background-secondary);
-  padding: 40px;
-  border-radius: 10px;
-  text-align: center;
-  border: 1px solid var(--border-color);
-  box-shadow: 0 4px 6px var(--shadow-color);
-`;
-
-export const PopupTitle = styled.h3`
-  color: var(--text-primary);
-  margin-bottom: 20px;
-`;
-
-export const ButtonGroup = styled.div`
+export const HeaderUser = styled.a`
+  height: 20px;
   display: flex;
-  gap: 10px;
+  flex-wrap: nowrap;
+  align-items: center;
   justify-content: center;
-`;
-
-export const ConfirmButton = styled.button`
-  background: var(--text-tertiary);
-  color: white;
-  border: none;
-  padding: 10px 20px;
-  border-radius: 4px;
-  cursor: pointer;
-
+  font-size: 14px;
+  line-height: 20px;
+  color: #565eef;
+  position: relative;
   &:hover {
-    background: var(--hover-primary);
+    color: #33399b;
   }
-`;
-
-export const CancelButton = styled.button`
-  background: var(--background-tertiary);
-  color: var(--text-primary);
-  border: 1px solid var(--border-color);
-  padding: 10px 20px;
-  border-radius: 4px;
-  cursor: pointer;
-
-  &:hover {
-    background: var(--border-color);
+  &::after {
+    content: "";
+    display: block;
+    width: 6px;
+    height: 6px;
+    border-radius: 1px;
+    border-left: 1.9px solid #565eef;
+    border-bottom: 1.9px solid #565eef;
+    transform: rotate(-45deg);
+    margin: -6px 0 0 5px;
+    padding: 0;
+  }
+  &:hover::after {
+    border-left-color: #33399b;
+    border-bottom-color: #33399b;
   }
 `;
