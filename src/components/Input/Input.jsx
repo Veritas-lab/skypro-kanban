@@ -9,7 +9,6 @@ const Input = ({
   error = false,
   onChange,
 }) => {
-  // Выбираем компонент в зависимости от тега
   const Component = tag === "textarea" ? StyledTextarea : StyledInput;
 
   return (

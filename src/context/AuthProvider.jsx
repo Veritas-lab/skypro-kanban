@@ -2,14 +2,10 @@ import { useState, useEffect } from "react";
 import { AuthContext } from "./AuthContext";
 import { checkLs } from "../utils/checkLs";
 
-// Написали обычный реакт-компонент, который принимает всё приложение
-// В виде пропса children
 const AuthProvider = ({ children }) => {
-  // checkLs проверяет лс на наличие ключа userInfo
-  const [user, setUser] = useState(checkLs()); // Здесь будет лежать инфа о юзере
+  const [user, setUser] = useState(checkLs());
 
   useEffect(() => {
-    // А тут мы проверяем ЛС, когда приложение запускается
     try {
       const storedUser = localStorage.getItem("userInfo");
       if (storedUser) {
@@ -20,7 +16,6 @@ const AuthProvider = ({ children }) => {
     }
   }, []);
 
-  // Обновляем данные о пользователе и сохраняем в лс
   const updateUserInfo = (userData) => {
     setUser(userData);
     if (userData) {
@@ -39,8 +34,7 @@ const AuthProvider = ({ children }) => {
     updateUserInfo(null);
     return true;
   };
-  // В сам провайдер нужно обязательно прокинуть те значения,
-  // которые мы хотим использовать в разных частях приложения
+
   return (
     <AuthContext.Provider value={{ user, login, logout, updateUserInfo }}>
       {children}

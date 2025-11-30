@@ -19,8 +19,7 @@ import { AuthContext } from "../../context/AuthContext";
 const AuthForm = ({ isSignUp }) => {
   const navigate = useNavigate();
   const { updateUserInfo } = useContext(AuthContext);
-  // Получаем setUser из хука useContext
-  // состояние полей
+
   const [formData, setFormData] = useState({
     name: "",
     login: "",
@@ -34,7 +33,6 @@ const AuthForm = ({ isSignUp }) => {
     password: "",
   });
 
-  // состояние текста ошибки, чтобы показать её пользователю
   const [error, setError] = useState("");
 
   // функция валидации
@@ -90,8 +88,6 @@ const AuthForm = ({ isSignUp }) => {
       return;
     }
     try {
-      // чтобы не писать две разных функции, выберем нужный запрос через
-      // тернарный оператор
       const data = !isSignUp
         ? await signIn({ login: formData.login, password: formData.password })
         : await signUp(formData);
