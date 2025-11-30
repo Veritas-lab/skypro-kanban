@@ -84,7 +84,6 @@ const AuthForm = ({ isSignUp }) => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     if (!validateForm()) {
-      // если у нас форма не прошла валидацию, то дальше не продолжаем
       return;
     }
     try {

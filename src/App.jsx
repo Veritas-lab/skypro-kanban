@@ -19,7 +19,7 @@ const StyledThemeWrapper = ({ children }) => {
 
   return (
     <StyledThemeProvider theme={currentTheme}>
-      <GlobalStyle /> {/* Добавьте GlobalStyle здесь */}
+      <GlobalStyle /> {}
       {children}
     </StyledThemeProvider>
   );
