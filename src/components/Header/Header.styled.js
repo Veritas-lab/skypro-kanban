@@ -1,9 +1,22 @@
 import styled from "styled-components";
 
-export const HeaderWrapper = styled.header`
+export const SHeader = styled.header`
   width: 100%;
   margin: 0 auto;
-  background-color: #ffffff;
+  background-color: ${(props) => props.theme.headerBg};
+  border-bottom: 1px solid ${(props) => props.theme.borderColor};
+  transition: all 0.3s ease;
+`;
+
+export const SContainer = styled.div`
+  max-width: 1260px;
+  width: 100%;
+  margin: 0 auto;
+  padding: 0 30px;
+  @media screen and (max-width: 495px) {
+    width: 100%;
+    padding: 0 16px;
+  }
 `;
 
 export const HeaderBlock = styled.div`
@@ -19,41 +32,28 @@ export const HeaderBlock = styled.div`
 `;
 
 export const HeaderLogo = styled.div`
-  img {
-    width: 85px;
-  }
+  width: 85px;
 `;
 
-export const HeaderNav = styled.nav`
+export const Img = styled.img`
+  width: 85px;
+`;
+
+export const ShowLight = styled.div`
+  display: ${(props) => (props.theme.isDark ? "none" : "block")};
+`;
+
+export const Dark = styled.div`
+  display: ${(props) => (props.theme.isDark ? "block" : "none")};
+`;
+
+export const HeaderNav = styled.div`
   max-width: 290px;
   padding: 0;
   display: flex;
   align-items: center;
   justify-content: center;
-`;
-
-export const HeaderButtonNew = styled.button`
-  width: 178px;
-  height: 30px;
-  border-radius: 4px;
-  background-color: #565eef;
-  color: #ffffff;
-  border: none;
-  font-size: 14px;
-  line-height: 1;
-  font-weight: 500;
-  margin-right: 20px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-
-  a {
-    color: #ffffff;
-  }
-
-  &:hover {
-    background-color: #33399b;
-  }
+  gap: 15px;
 `;
 
 export const HeaderUser = styled.a`
@@ -64,7 +64,13 @@ export const HeaderUser = styled.a`
   justify-content: center;
   font-size: 14px;
   line-height: 20px;
-  color: #565eef;
+  color: ${(props) => props.theme.primaryColor};
+  position: relative;
+  cursor: pointer;
+
+  &:hover {
+    color: ${(props) => props.theme.primaryHover};
+  }
 
   &::after {
     content: "";
@@ -72,19 +78,38 @@ export const HeaderUser = styled.a`
     width: 6px;
     height: 6px;
     border-radius: 1px;
-    border-left: 1.9px solid #565eef;
-    border-bottom: 1.9px solid #565eef;
+    border-left: 1.9px solid ${(props) => props.theme.primaryColor};
+    border-bottom: 1.9px solid ${(props) => props.theme.primaryColor};
     transform: rotate(-45deg);
     margin: -6px 0 0 5px;
     padding: 0;
   }
 
-  &:hover {
-    color: #33399b;
-
-    &::after {
-      border-left-color: #33399b;
-      border-bottom-color: #33399b;
-    }
+  &:hover::after {
+    border-left-color: ${(props) => props.theme.primaryHover};
+    border-bottom-color: ${(props) => props.theme.primaryHover};
   }
+`;
+
+/* Новые стили для переключателя темы */
+export const ThemeToggle = styled.button`
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 8px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.3s ease;
+
+  &:hover {
+    background-color: ${(props) => props.theme.toggleHoverBg};
+  }
+`;
+
+export const ThemeToggleIcon = styled.span`
+  font-size: 18px;
+  transition: transform 0.3s ease;
+  transform: ${(props) => (props.$isDark ? "rotate(180deg)" : "rotate(0)")};
 `;

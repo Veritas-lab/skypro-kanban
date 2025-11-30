@@ -1,19 +1,67 @@
+import { useContext } from "react";
 import Card from "../Card/Card";
-import { ColumnWrapper, ColumnTitle, CardsContainer } from "./Column.styled";
+import CardLoader from "../CardLoader/CardLoader";
+import { Cards, ColumnTitle, MainColumn, PTitle } from "./Column.styled";
+import { TasksContext } from "../../context/TasksContext";
+import { CalendarDateEnd } from "../Calendar/Calendar.styled";
 
-export default function Column({ title, cards }) {
-  const filteredCards = cards.filter((card) => card.status === title);
+const Column = ({
+  title,
+  loading,
+  filteredTasks,
+  onDrop,
+  onDragOver,
+  onStatusChange,
+}) => {
+  const { tasks } = useContext(TasksContext);
+  filteredTasks = Array.isArray(tasks)
+    ? tasks.filter((card) => card.status === title)
+    : [];
+
+  const handleDragOver = (e) => {
+    e.preventDefault();
+    if (onDragOver) onDragOver(e);
+  };
+
+  const handleDrop = (e) => {
+    e.preventDefault();
+    if (onDrop) onDrop(e, title);
+  };
+
+  const handleStatusChange = (cardId, newStatus) => {
+    if (onStatusChange) {
+      onStatusChange(cardId, newStatus);
+    }
+  };
 
   return (
-    <ColumnWrapper className="column">
+    <MainColumn onDragOver={handleDragOver} onDrop={handleDrop}>
       <ColumnTitle>
-        <p>{title}</p>
+        <PTitle>{title}</PTitle>
       </ColumnTitle>
-      <CardsContainer className="cards">
-        {filteredCards.map((card) => (
-          <Card key={card.id} cardData={card} />
-        ))}
-      </CardsContainer>
-    </ColumnWrapper>
+      <Cards>
+        {loading ? (
+          Array.from({ length: 3 }).map((_, index) => (
+            <CardLoader key={`loader-${index}`} />
+          ))
+        ) : filteredTasks.length > 0 ? (
+          filteredTasks.map((card) => (
+            <Card
+              card={card}
+              key={card._id}
+              onStatusChange={handleStatusChange}
+              onDragStart={(e) => {
+                e.dataTransfer.setData("cardId", card._id);
+                e.dataTransfer.setData("fromColumn", card.status);
+              }}
+            />
+          ))
+        ) : (
+          <CalendarDateEnd>Нет задач</CalendarDateEnd>
+        )}
+      </Cards>
+    </MainColumn>
   );
-}
+};
+
+export default Column;

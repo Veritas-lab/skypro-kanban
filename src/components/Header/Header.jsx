@@ -1,52 +1,77 @@
 import { Link } from "react-router-dom";
-import { useState } from "react";
-import PopUser from "../Popups/PopUser";
+import Button from "../Button/Button";
+import PopUser from "../PopUser/PopUser";
 import {
-  HeaderWrapper,
+  Dark,
+  SHeader,
+  SContainer,
   HeaderBlock,
   HeaderLogo,
   HeaderNav,
-  HeaderButtonNew,
+  Img,
   HeaderUser,
+  ThemeToggle,
+  ThemeToggleIcon,
+  ShowLight,
 } from "./Header.styled";
+import { useContext, useState } from "react";
+import { AuthContext } from "../../context/AuthContext";
+import { useTheme } from "../../context/ThemeContext";
 
-export default function Header() {
-  const [isUserPopupOpen, setIsUserPopupOpen] = useState(false);
-  const toggleUserPopup = () => {
-    setIsUserPopupOpen(!isUserPopupOpen);
+const Header = () => {
+  const { user } = useContext(AuthContext);
+  const { isDarkTheme, toggleTheme } = useTheme();
+  const [isModalOpen, setIsModalOpen] = useState(false);
+
+  const toggleModal = () => {
+    setIsModalOpen(!isModalOpen);
   };
 
+  // Если пользователя нет, не рендерим хедер
+  if (!user) {
+    return null;
+  }
+
   return (
-    <HeaderWrapper className="header">
-      <div className="container">
+    <SHeader>
+      <SContainer>
         <HeaderBlock>
-          <HeaderLogo className="_show _light">
-            <Link to="/">
-              <img src="../public/images/logo.png" alt="logo" />
-            </Link>
-          </HeaderLogo>
-          <HeaderLogo className="_dark">
-            <Link to="/">
-              <img src="../public/images/logo_dark.png" alt="logo" />
-            </Link>
-          </HeaderLogo>
+          {/* Логотип для светлой темы */}
+          <ShowLight>
+            <HeaderLogo>
+              <a href="" target="_self">
+                <Img src="../images/logo.png" alt="logo" />
+              </a>
+            </HeaderLogo>
+          </ShowLight>
+
+          {/* Логотип для темной темы */}
+          <Dark>
+            <HeaderLogo>
+              <a href="" target="_self">
+                <Img src="../images/logo_dark.png" alt="logo" />
+              </a>
+            </HeaderLogo>
+          </Dark>
+
           <HeaderNav>
-            <HeaderButtonNew id="btnMainNew">
-              <Link to="/new">Создать новую задачу</Link>
-            </HeaderButtonNew>
-            <HeaderUser
-              href="#user-set-target"
-              onClick={(e) => {
-                e.preventDefault();
-                toggleUserPopup();
-              }}
-            >
-              Ivan Ivanov
-            </HeaderUser>
-            {isUserPopupOpen && <PopUser onClose={toggleUserPopup} />}
+            {/* Переключатель темы */}
+            <ThemeToggle onClick={toggleTheme}>
+              <ThemeToggleIcon $isDark={isDarkTheme}>
+                {isDarkTheme ? "🌙" : "☀️"}
+              </ThemeToggleIcon>
+            </ThemeToggle>
+
+            <Link to="/card/add">
+              <Button text="Создать новую задачу" />
+            </Link>
+            <HeaderUser onClick={toggleModal}>{user.name}</HeaderUser>
+            {isModalOpen && <PopUser onClose={toggleModal} />}
           </HeaderNav>
         </HeaderBlock>
-      </div>
-    </HeaderWrapper>
+      </SContainer>
+    </SHeader>
   );
-}
+};
+
+export default Header;

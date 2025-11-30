@@ -1,12 +1,7 @@
-import PopExit from "../components/Popups/PopExit";
-import { useNavigate } from "react-router-dom";
+import PopExit from "../components/PopExit/PopExit";
 
-export default function ExitPage({ setIsAuth }) {
-  const navigate = useNavigate();
+const ExitPage = ({ setIsAuth }) => {
+  return <PopExit setIsAuth={setIsAuth} />;
+};
 
-  const handleClose = () => {
-    navigate(-1);
-  };
-
-  return <PopExit setIsAuth={setIsAuth} onClose={handleClose} />;
-}
+export default ExitPage;
