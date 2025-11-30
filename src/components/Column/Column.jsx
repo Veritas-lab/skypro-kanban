@@ -5,7 +5,14 @@ import { Cards, ColumnTitle, MainColumn, PTitle } from "./Column.styled";
 import { TasksContext } from "../../context/TasksContext";
 import { CalendarDateEnd } from "../Calendar/Calendar.styled";
 
-const Column = ({ title, loading, filteredTasks, onDrop, onDragOver }) => {
+const Column = ({
+  title,
+  loading,
+  filteredTasks,
+  onDrop,
+  onDragOver,
+  onStatusChange,
+}) => {
   const { tasks } = useContext(TasksContext);
   filteredTasks = Array.isArray(tasks)
     ? tasks.filter((card) => card.status === title)
@@ -19,6 +26,12 @@ const Column = ({ title, loading, filteredTasks, onDrop, onDragOver }) => {
   const handleDrop = (e) => {
     e.preventDefault();
     if (onDrop) onDrop(e, title);
+  };
+
+  const handleStatusChange = (cardId, newStatus) => {
+    if (onStatusChange) {
+      onStatusChange(cardId, newStatus);
+    }
   };
 
   return (
@@ -36,6 +49,7 @@ const Column = ({ title, loading, filteredTasks, onDrop, onDragOver }) => {
             <Card
               card={card}
               key={card._id}
+              onStatusChange={handleStatusChange}
               onDragStart={(e) => {
                 e.dataTransfer.setData("cardId", card._id);
                 e.dataTransfer.setData("fromColumn", card.status);

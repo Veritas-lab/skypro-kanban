@@ -1,4 +1,5 @@
 import { Link } from "react-router-dom";
+import { useState } from "react";
 import {
   CardBtn,
   CardBtnDiv,
@@ -9,6 +10,9 @@ import {
   CardTheme,
   CardThemeP,
   CardTitle,
+  StatusSelect,
+  StatusOption,
+  StatusDisplay,
 } from "./Card.styled";
 import {
   Categories,
@@ -36,22 +40,44 @@ const topicColors = {
   },
 };
 
-const Card = ({ open, card, onDragStart }) => {
+const statusOptions = [
+  "Без статуса",
+  "Нужно сделать",
+  "В работе",
+  "Тестирование",
+  "Готово",
+];
+
+const Card = ({ open, card, onStatusChange, onDragStart }) => {
   const topicStyle = topicColors[card?.topic] || {
     background: "#94a6be",
     color: "#ffffff",
+  };
+
+  const [isEditingStatus, setIsEditingStatus] = useState(false);
+
+  const handleStatusChange = (e) => {
+    const newStatus = e.target.value;
+
+    if (onStatusChange && card?._id) {
+      onStatusChange(card._id, newStatus);
+    }
+
+    setIsEditingStatus(false);
+  };
+
+  const handleStatusClick = () => {
+    setIsEditingStatus(true);
   };
 
   const handleDragStart = (e) => {
     if (onDragStart) {
       onDragStart(e);
     }
-    // Добавляем визуальный эффект при перетаскивании
     e.currentTarget.style.opacity = "0.4";
   };
 
   const handleDragEnd = (e) => {
-    // Восстанавливаем нормальный вид после перетаскивания
     e.currentTarget.style.opacity = "1";
   };
 
@@ -95,6 +121,27 @@ const Card = ({ open, card, onDragStart }) => {
                 <a href="" target="_blank">
                   <CardTitle>{card?.title}</CardTitle>
                 </a>
+
+                {/* Блок статуса */}
+                {isEditingStatus ? (
+                  <StatusSelect
+                    value={card?.status || "Без статуса"}
+                    onChange={handleStatusChange}
+                    autoFocus
+                    onBlur={() => setIsEditingStatus(false)}
+                  >
+                    {statusOptions.map((status) => (
+                      <StatusOption key={status} value={status}>
+                        {status}
+                      </StatusOption>
+                    ))}
+                  </StatusSelect>
+                ) : (
+                  <StatusDisplay onClick={handleStatusClick}>
+                    {card?.status || "Без статуса"}
+                  </StatusDisplay>
+                )}
+
                 <CardDate>
                   <CardDateSvg
                     xmlns="http://www.w3.org/2000/svg"
