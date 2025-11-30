@@ -1,25 +1,46 @@
-import styled from "styled-components";
+import { useContext, useMemo } from "react";
+import { TasksContext } from "../../context/TasksContext";
+import Column from "../Column/Column";
+import { SContainer } from "../Header/Header.styled";
+import { SMain, MainBlock, MainContent } from "./Main.styled";
 
-export const SMain = styled.main`
-  width: 100%;
-  background-color: #eaeef6;
-`;
+const defaultColumnTitles = [
+  "Нужно сделать",
+  "В работе",
+  "Тестирование",
+  "Готово",
+];
 
-export const MainBlock = styled.main`
-  width: 100%;
-  margin: 0 auto;
-  padding: 25px 0 49px;
-  @media screen and (max-width: 1200px) {
-    width: 100%;
-    margin: 0 auto;
-    padding: 40px 0 64px;
-  }
-`;
+const Main = () => {
+  const { tasks, loading } = useContext(TasksContext);
 
-export const MainContent = styled.main`
-  width: 100%;
-  display: flex;
-  @media screen and (max-width: 1200px) {
-    display: block;
-  }
-`;
+  const columnTitles = useMemo(() => {
+    if (!tasks || tasks.length === 0) {
+      return defaultColumnTitles;
+    }
+
+    const uniqueStatuses = [...new Set(tasks.map((task) => task.status))];
+    return uniqueStatuses || defaultColumnTitles;
+  }, [tasks]);
+
+  return (
+    <SMain>
+      <SContainer>
+        <MainBlock>
+          <MainContent>
+            {columnTitles.map((title, index) => (
+              <Column
+                key={index}
+                title={title}
+                tasks={tasks.filter((task) => task.status === title)}
+                loading={loading}
+              />
+            ))}
+          </MainContent>
+        </MainBlock>
+      </SContainer>
+    </SMain>
+  );
+};
+
+export default Main;
