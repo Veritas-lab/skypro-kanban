@@ -1,35 +1,34 @@
 import axios from "axios";
 
-const BASE_URL = "https://wedev-api.sky.pro/api/";
+const API_URL = "https://wedev-api.sky.pro/api/user";
 
-// Регистрация
-export const registerUser = async (userData) => {
+export async function signIn(userData) {
   try {
-    const response = await axios.post(`${BASE_URL}user`, userData, {
+    const data = await axios.post(API_URL + "/login", userData, {
       headers: {
         "Content-Type": "",
       },
     });
-    return response.data.user;
+    return data.data.user;
   } catch (error) {
-    throw error.response
-      ? error.response.data
-      : new Error("Не удалось зарегистрировать пользователя");
+    throw new Error(error.response.data.error);
   }
-};
+}
 
-// Логин
-export const loginUser = async (credentials) => {
+export async function signUp({ name, login, password }) {
   try {
-    const response = await axios.post(`${BASE_URL}user/login`, credentials, {
-      headers: {
-        "Content-Type": "",
-      },
-    });
-    return response.data.user;
+    const data = await axios.post(
+      API_URL,
+      { login, name, password },
+      {
+        headers: {
+          "Content-Type": "",
+        },
+      }
+    );
+    return data.data.user;
   } catch (error) {
-    throw error.response
-      ? error.response.data
-      : new Error("Не удалось войти в систему");
+    console.log(error);
+    throw new Error(error.response.data.error);
   }
-};
+}
