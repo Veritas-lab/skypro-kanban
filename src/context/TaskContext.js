@@ -1,3 +1,7 @@
 import { createContext } from "react";
 
-export const TaskContext = createContext(null);
+export const TasksContext = createContext({
+  tasks: [],
+  loading: "false",
+  error: "",
+});
