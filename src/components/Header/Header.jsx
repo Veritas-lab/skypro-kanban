@@ -1,52 +1,50 @@
 import { Link } from "react-router-dom";
-import { useState } from "react";
-import PopUser from "../Popups/PopUser";
+import Button from "../Button/Button";
+import PopUser from "../PopUser/PopUser";
 import {
-  HeaderWrapper,
+  Dark,
+  SHeader,
+  SContainer,
   HeaderBlock,
   HeaderLogo,
   HeaderNav,
-  HeaderButtonNew,
+  Img,
   HeaderUser,
 } from "./Header.styled";
+import { useContext } from "react";
+import { AuthContext } from "../../context/AuthContext";
 
-export default function Header() {
-  const [isUserPopupOpen, setIsUserPopupOpen] = useState(false);
-  const toggleUserPopup = () => {
-    setIsUserPopupOpen(!isUserPopupOpen);
-  };
+const Header = ({ isModalOpen, toggleModal }) => {
+  const { user } = useContext(AuthContext);
 
   return (
-    <HeaderWrapper className="header">
-      <div className="container">
+    <SHeader>
+      <SContainer>
         <HeaderBlock>
-          <HeaderLogo className="_show _light">
-            <Link to="/">
-              <img src="../public/images/logo.png" alt="logo" />
-            </Link>
+          <HeaderLogo>
+            <a href="" target="_self">
+              <Img src="../images/logo.png" alt="logo" />
+            </a>
           </HeaderLogo>
-          <HeaderLogo className="_dark">
-            <Link to="/">
-              <img src="../public/images/logo_dark.png" alt="logo" />
-            </Link>
+          <HeaderLogo>
+            <Dark>
+              <a href="" target="_self">
+                <Img src="../images/logo_dark.png" alt="logo" />
+              </a>
+            </Dark>
           </HeaderLogo>
           <HeaderNav>
-            <HeaderButtonNew id="btnMainNew">
-              <Link to="/new">Создать новую задачу</Link>
-            </HeaderButtonNew>
-            <HeaderUser
-              href="#user-set-target"
-              onClick={(e) => {
-                e.preventDefault();
-                toggleUserPopup();
-              }}
-            >
-              Ivan Ivanov
-            </HeaderUser>
-            {isUserPopupOpen && <PopUser onClose={toggleUserPopup} />}
+            <Link to="/card/add">
+              {" "}
+              <Button text="Создать новую задачу" />
+            </Link>
+            <HeaderUser onClick={toggleModal}>{user.name}</HeaderUser>
+            {isModalOpen ? <PopUser isModalOpen={isModalOpen} /> : null}
           </HeaderNav>
         </HeaderBlock>
-      </div>
-    </HeaderWrapper>
+      </SContainer>
+    </SHeader>
   );
-}
+};
+
+export default Header;
