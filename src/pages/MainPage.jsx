@@ -4,7 +4,7 @@ import { Wrapper } from "../Wrapper.styled";
 import Header from "../components/Header/Header";
 import Main from "../components/Main/Main";
 import { useState } from "react";
-import { TasksProvider } from "../context/TasksProvider";
+import { TasksProvider } from "../context/TaskProvider";
 
 function MainPage() {
   const [isModalOpen, setIsModalOpen] = useState(false);

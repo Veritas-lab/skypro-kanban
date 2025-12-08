@@ -1,4 +1,4 @@
-import Date from "../Date/Date/Date";
+import Date from "../Date/Date";
 import { Link } from "react-router-dom";
 import {
   CardBtn,
