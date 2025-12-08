@@ -1,7 +1,6 @@
-import PopNewCard from "../components/PopNewCard/PopNewCard";
+import PopNewCard from "../components/popups/PopNewCard/PopNewCard";
 
-const NewCardPage = () => {
+function NewCardPage() {
   return <PopNewCard />;
-};
-
+}
 export default NewCardPage;

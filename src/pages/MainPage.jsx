@@ -1,26 +1,17 @@
-import { Outlet } from "react-router-dom";
-import "../App.css";
-import { Wrapper } from "../Wrapper.styled";
 import Header from "../components/Header/Header";
 import Main from "../components/Main/Main";
-import { useState } from "react";
-import { TasksProvider } from "../context/TaskProvider";
+import "../App.css";
+import { Outlet } from "react-router-dom";
+import { GlobalStyles } from "../styles/GlobalStyles.styled";
 
 function MainPage() {
-  const [isModalOpen, setIsModalOpen] = useState(false);
-  const toggleModal = () => {
-    setIsModalOpen(!isModalOpen);
-  };
-
   return (
-    <TasksProvider>
-      <Wrapper>
-        <Header isModalOpen={isModalOpen} toggleModal={toggleModal} />
-        <Main />
-        <Outlet />
-      </Wrapper>
-    </TasksProvider>
+    <div className="wrapper">
+      <GlobalStyles />
+      <Header />
+      <Main />
+      <Outlet />
+    </div>
   );
 }
-
 export default MainPage;

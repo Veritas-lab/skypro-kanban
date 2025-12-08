@@ -1,7 +1,17 @@
-import React from "react";
+import {
+  NotFoundContainer,
+  NotFoundTitle,
+  NotFoundText,
+  NotFoundLink,
+} from "./NotFoundPage.styled";
 
-const NotFoundPage = () => {
-  return <div>Страница не найдена</div>;
-};
-
+function NotFoundPage() {
+  return (
+    <NotFoundContainer>
+      <NotFoundTitle>404</NotFoundTitle>
+      <NotFoundText>Страница не найдена</NotFoundText>
+      <NotFoundLink to="/">Вернуться на главную</NotFoundLink>
+    </NotFoundContainer>
+  );
+}
 export default NotFoundPage;

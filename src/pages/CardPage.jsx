@@ -1,7 +1,30 @@
-import PopBrowse from "../components/PopBrowse/PopBrowse";
+import { useParams, useNavigate } from "react-router-dom";
+import PopBrowse from "../components/popups/PopBrowse/PopBrowse.jsx";
+import { useMemo, useEffect } from "react";
+import { useTasks } from "../contexts/TaskContext";
 
-const CardPage = () => {
-  return <PopBrowse />;
-};
+function CardPage() {
+  const { id } = useParams();
+  const navigate = useNavigate();
+  const { tasks, tasksLoading, tasksError } = useTasks();
+
+  const task = useMemo(
+    () => tasks.find((t) => String(t.id ?? t._id) === String(id)),
+    [tasks, id]
+  );
+
+  useEffect(() => {
+    if (!task) {
+      navigate(-1);
+    }
+  }, [task, navigate]);
+
+  if (tasksLoading) return <div>Загрузка...</div>;
+  if (tasksError) return <div>Ошибка: {tasksError}</div>;
+
+  const handleClose = () => navigate(-1);
+
+  return <PopBrowse task={task} onClose={handleClose} />;
+}
 
 export default CardPage;
