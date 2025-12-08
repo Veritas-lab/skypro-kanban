@@ -1,50 +1,57 @@
 import { useNavigate } from "react-router-dom";
 import {
-  PopExitAN,
-  PopExitAY,
-  PopExitBlock,
-  PopExitButtonN,
-  PopExitButtonY,
+  PopExitStyle,
   PopExitContainer,
+  PopExitBlock,
+  PopExitTitle,
+  PopExitForm,
   PopExitFormGroup,
-  PopExitH,
-  PopExitTtl,
-  SPopExit,
-} from "./PopExit.styled";
-const PopExit = ({ setIsAuth }) => {
-  const navigate = useNavigate();
+  PopExitYesButton,
+  PopExitNoButton,
+} from "../PopExit/PopExit.styled";
+import { useAuth } from "../../../contexts/AuthContext";
 
-  function handleLogout(e) {
+function PopExit({ onClose }) {
+  const navigate = useNavigate();
+  const { logout } = useAuth();
+
+  const handleYesExit = (e) => {
     e.preventDefault();
-    setIsAuth(false);
-    navigate("/sign-in");
-  }
-  function handleLogState(e) {
-    e.preventDefault();
-    setIsAuth(true);
-    navigate("/");
-  }
+    logout();
+    onClose && onClose();
+    setTimeout(() => {
+      navigate("/login");
+    }, 0);
+  };
+
+  const handleNoExit = () => {
+    onClose && onClose();
+  };
+
   return (
-    <SPopExit>
+    <PopExitStyle id="popExit">
       <PopExitContainer>
         <PopExitBlock>
-          <PopExitTtl>
-            <PopExitH>Выйти из аккаунта?</PopExitH>
-          </PopExitTtl>
-          <form className="pop-exit__form" id="formExit" action="#">
+          <PopExitTitle>
+            <h2>Выйти из аккаунта?</h2>
+          </PopExitTitle>
+          <PopExitForm id="formExit" action="#">
             <PopExitFormGroup>
-              <PopExitButtonY onClick={handleLogout} id="exitYes">
-                <PopExitAY>Да, выйти</PopExitAY>{" "}
-              </PopExitButtonY>
-              <PopExitButtonN onClick={handleLogState} id="exitNo">
-                <PopExitAN>Нет, остаться</PopExitAN>{" "}
-              </PopExitButtonN>
+              <PopExitYesButton
+                type="button"
+                id="exitYes"
+                onClick={handleYesExit}
+              >
+                Да, выйти
+              </PopExitYesButton>
+              <PopExitNoButton type="button" id="exitNo" onClick={handleNoExit}>
+                Нет, остаться
+              </PopExitNoButton>
             </PopExitFormGroup>
-          </form>
+          </PopExitForm>
         </PopExitBlock>
       </PopExitContainer>
-    </SPopExit>
+    </PopExitStyle>
   );
-};
-
+}
 export default PopExit;

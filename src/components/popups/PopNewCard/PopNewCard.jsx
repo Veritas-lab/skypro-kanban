@@ -1,158 +1,173 @@
 import { useNavigate } from "react-router-dom";
+import React, { useState } from "react";
 import Calendar from "../../Calendar/Calendar";
 import {
-  Categories,
-  CategoriesPSubttl,
-  CategoriesTheme,
-  CategoriesThemeP,
-  CategoriesThemes,
-  ErrorPB,
-  PopBrowseContainer,
-  Subttl,
-} from "../PopBrowse/PopBrowse.styled";
-import {
-  FormNewArea,
-  FormNewBlock,
-  FormNewCreate,
-  FormNewInput,
+  PopNewCardStyled,
+  PopNewCardContainer,
   PopNewCardBlock,
-  PopNewCardClose,
   PopNewCardContent,
-  PopNewCardForm,
-  PopNewCardTtl,
+  PopNewCardTitle,
+  PopNewCardClose,
   PopNewCardWrap,
-  SPopNewCard,
+  PopNewCardForm,
+  FormNewBlock,
+  FormNewInput,
+  FormNewArea,
+  FormNewCreate,
+  Categories,
+  CategoriesP,
+  CategoriesThemes,
+  CategoriesTheme,
+  Subtitle,
 } from "./PopNewCard.styled";
-import { postTask } from "../../../services/api";
-import { useContext, useState } from "react";
-import { AuthContext } from "../../../context/AuthContext";
-import { TasksContext } from "../../../context/TasksContext";
+import { useTasks } from "../../../contexts/TaskContext";
 
-const categories = [
-  { name: "Web Design", background: "#ffe4c2", color: "#ff6d00" },
-  { name: "Research", background: "#b4fdd1", color: "#06b16e" },
-  { name: "Copywriting", background: "#e9d4ff", color: "#9a48f1" },
-];
+const formatDateForServer = (dateString) => {
+  if (!dateString) {
+    const today = new Date();
+    const day = String(today.getDate()).padStart(2, "0");
+    const month = String(today.getMonth() + 1).padStart(2, "0");
+    const year = today.getFullYear();
+    return `${day}.${month}.${year}`;
+  }
 
-const PopNewCard = () => {
-  const { setTasks } = useContext(TasksContext);
-  const [setLoading] = useState(false);
-  const [error, setError] = useState("");
-  const { user } = useContext(AuthContext);
+  if (typeof dateString === "string" && dateString.includes(".")) {
+    return dateString;
+  }
+
+  try {
+    const date = new Date(dateString);
+    if (isNaN(date)) return "";
+
+    const day = String(date.getDate()).padStart(2, "0");
+    const month = String(date.getMonth() + 1).padStart(2, "0");
+    const year = date.getFullYear();
+
+    return `${day}.${month}.${year}`;
+  } catch (error) {
+    console.error("Ошибка форматирования даты:", error);
+    return "";
+  }
+};
+
+function PopNewCard({ onClose }) {
+  const [category, setCategory] = useState("Web Design");
+  const [title, setTitle] = useState("");
+  const [description, setDescription] = useState("");
+  const [date, setDate] = useState("");
+  const [isLoading, setIsLoading] = useState(false);
+
+  const { createTask } = useTasks();
   const navigate = useNavigate();
-  const [selectedCategory, setSelectedCategory] = useState("");
-  const [formData, setFormData] = useState({
-    title: "",
-    description: "",
-    topic: "Research",
-    status: "Без статуса",
-    date: null,
-  });
 
-  // состояние ошибок
-  const [errors, setErrors] = useState({
-    title: "",
-    description: "",
-    status: "",
-    topic: "",
-    date: "",
-  });
+  const handleClose = () => navigate(-1);
 
-  const handleChange = (e) => {
-    const { name, value } = e.target;
-    setFormData({
-      ...formData,
-      [name]: value,
-    });
-    setErrors({ ...errors, [name]: false });
-    setError("");
-  };
+  const handleCreate = async () => {
+    if (!title.trim()) {
+      alert("Введите название задачи");
+      return;
+    }
 
-  const addNewTask = async (e) => {
-    e.preventDefault();
-    setLoading(true);
+    setIsLoading(true);
+
     try {
-      const newTasks = await postTask({ token: user?.token, task: formData });
-      setTasks(newTasks);
-      handleClose(true);
+      const newTask = {
+        title: title.trim(),
+        description: description.trim(),
+        topic: category,
+        status: "Без статуса",
+        date: formatDateForServer(date),
+      };
+
+      console.log("Создаваемая задача:", newTask);
+
+      await createTask(newTask);
+      alert("Задача создана!");
+      onClose ? onClose() : handleClose();
     } catch (error) {
-      setError("Ошибка добавления задачи", error.message);
+      alert("Не удалось создать задачу: " + error.message);
+      console.error("Ошибка создания:", error);
     } finally {
-      setLoading(false);
+      setIsLoading(false);
     }
   };
 
-  const handleCategoryClick = (categoryName) => {
-    setSelectedCategory(categoryName);
-    setFormData({ ...formData, topic: categoryName });
-  };
-
-  const handleClose = () => {
-    navigate("/");
-  };
-
   return (
-    <SPopNewCard>
-      <PopBrowseContainer>
-        <PopNewCardBlock>
+    <PopNewCardStyled id="popNewCard">
+      <PopNewCardContainer onClick={handleClose}>
+        <PopNewCardBlock onClick={(e) => e.stopPropagation()}>
           <PopNewCardContent>
-            <PopNewCardTtl>Создание задачи</PopNewCardTtl>
+            <PopNewCardTitle>Создание задачи</PopNewCardTitle>
             <PopNewCardClose onClick={handleClose}>&#10006;</PopNewCardClose>
             <PopNewCardWrap>
-              <PopNewCardForm onSubmit={addNewTask}>
+              <PopNewCardForm id="formNewCard" action="#">
                 <FormNewBlock>
-                  <Subttl>Название задачи</Subttl>
+                  <Subtitle htmlFor="formTitle">Название задачи</Subtitle>
                   <FormNewInput
                     type="text"
-                    name="title"
+                    name="name"
                     id="formTitle"
                     placeholder="Введите название задачи..."
-                    value={formData.name}
-                    onChange={handleChange}
                     autoFocus
+                    value={title}
+                    onChange={(e) => setTitle(e.target.value)}
                   />
                 </FormNewBlock>
-                <FormNewBlock onSubmit={(e) => e.preventDefault()}>
-                  <Subttl>Описание задачи</Subttl>
+                <FormNewBlock>
+                  <Subtitle htmlFor="textArea">Описание задачи</Subtitle>
                   <FormNewArea
-                    type="text"
-                    name="description"
+                    name="text"
                     id="textArea"
                     placeholder="Введите описание задачи..."
-                    value={formData.text}
-                    onChange={handleChange}
-                  ></FormNewArea>
+                    value={description}
+                    onChange={(e) => setDescription(e.target.value)}
+                  />
                 </FormNewBlock>
               </PopNewCardForm>
-              <Calendar
-                selected={formData.date}
-                setSelected={(date) => setFormData({ ...formData, date })}
-              />
+              <Calendar value={date} onChange={setDate} />
             </PopNewCardWrap>
-            <ErrorPB>{error}</ErrorPB>
             <Categories>
-              <CategoriesPSubttl>Категория</CategoriesPSubttl>
+              <CategoriesP>Выберете категорию</CategoriesP>
               <CategoriesThemes>
-                {categories.map((category) => (
-                  <CategoriesTheme
-                    key={category.name}
-                    $background={category.background}
-                    $isActive={selectedCategory === category.name}
-                    onClick={() => handleCategoryClick(category.name)}
-                  >
-                    <CategoriesThemeP $color={category.color}>
-                      {category.name}
-                    </CategoriesThemeP>
-                  </CategoriesTheme>
-                ))}
+                <CategoriesTheme
+                  className={`_web-design ${
+                    category === "Web Design" ? "_active-category" : ""
+                  }`}
+                  onClick={() => setCategory("Web Design")}
+                >
+                  <p className="_web-design">Web Design</p>
+                </CategoriesTheme>
+                <CategoriesTheme
+                  className={`_research ${
+                    category === "Research" ? "_active-category" : ""
+                  }`}
+                  onClick={() => setCategory("Research")}
+                >
+                  <p className="_research">Research</p>
+                </CategoriesTheme>
+                <CategoriesTheme
+                  className={`_copywriting ${
+                    category === "Copywriting" ? "_active-category" : ""
+                  }`}
+                  onClick={() => setCategory("Copywriting")}
+                >
+                  <p className="_copywriting">Copywriting</p>
+                </CategoriesTheme>
               </CategoriesThemes>
             </Categories>
-            <FormNewCreate onClick={addNewTask}>Создать задачу</FormNewCreate>
+            <FormNewCreate
+              className="_hover01"
+              id="btnCreate"
+              onClick={handleCreate}
+              disabled={isLoading || !title.trim()}
+            >
+              {isLoading ? "Создание..." : "Создать задачу"}
+            </FormNewCreate>
           </PopNewCardContent>
         </PopNewCardBlock>
-      </PopBrowseContainer>
-    </SPopNewCard>
+      </PopNewCardContainer>
+    </PopNewCardStyled>
   );
-};
+}
 
 export default PopNewCard;

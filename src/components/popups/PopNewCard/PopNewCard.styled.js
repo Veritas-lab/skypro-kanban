@@ -1,7 +1,6 @@
 import styled from "styled-components";
 
-export const SPopNewCard = styled.div`
-  display: block;
+export const PopNewCardStyled = styled.div`
   width: 100%;
   min-width: 375px;
   height: 100%;
@@ -10,8 +9,13 @@ export const SPopNewCard = styled.div`
   top: 0;
   left: 0;
   z-index: 6;
-  @media screen and (max-width: 660px) {
+
+  @media (max-width: 660px) {
     top: 70px;
+  }
+
+  &.target {
+    display: block;
   }
 `;
 
@@ -24,31 +28,24 @@ export const PopNewCardContainer = styled.div`
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  background: rgba(0, 0, 0, 0.4);
-  @media screen and (max-width: 660px) {
-    padding: 0;
-    justify-content: flex-start;
-  }
-  @media screen and (max-width: 495px) {
-    padding: 0;
-    justify-content: flex-start;
-  }
+  background: rgba(0, 0, 0, 0.2);
 `;
 
 export const PopNewCardBlock = styled.div`
   display: block;
   margin: 0 auto;
-  background-color: #ffffff;
+  background-color: ${({ theme }) => theme.modalBg};
   max-width: 630px;
   width: 100%;
   padding: 40px 30px 48px;
   border-radius: 10px;
-  border: 0.7px solid #d4dbe5;
+  border: 0.7px solid ${({ theme }) => theme.border};
   position: relative;
-  @media screen and (max-width: 660px) {
+  box-shadow: 0 4px 32px rgba(0, 0, 0, 0.15);
+  transition: background-color 0.3s, border-color 0.3s;
+
+  @media (max-width: 660px) {
     border-radius: 0;
-  }
-  @media screen and (max-width: 495px) {
     padding: 20px 16px 32px;
   }
 `;
@@ -58,25 +55,23 @@ export const PopNewCardContent = styled.div`
   text-align: left;
 `;
 
-export const PopNewCardTtl = styled.h3`
-  color: #000;
+export const PopNewCardTitle = styled.h3`
+  color: ${({ theme }) => theme.text};
   font-size: 20px;
   font-weight: 600;
   line-height: 24px;
   margin-bottom: 20px;
 `;
 
-export const PopNewCardClose = styled.button`
+export const PopNewCardClose = styled.a`
   position: absolute;
   top: 20px;
   right: 30px;
-  color: #94a6be;
-  background-color: inherit;
-  border: none;
-  outline: none;
+  color: ${({ theme }) => theme.textSecondary};
   cursor: pointer;
+
   &:hover {
-    color: #000000;
+    color: ${({ theme }) => theme.text};
   }
 `;
 
@@ -84,7 +79,8 @@ export const PopNewCardWrap = styled.div`
   display: flex;
   align-items: flex-start;
   justify-content: space-between;
-  @media screen and (max-width: 660px) {
+
+  @media (max-width: 660px) {
     display: block;
   }
 `;
@@ -94,11 +90,6 @@ export const PopNewCardForm = styled.form`
   width: 100%;
   display: block;
   margin-bottom: 20px;
-  @media screen and (max-width: 495px) {
-    max-width: 100%;
-    width: 100%;
-    display: block;
-  }
 `;
 
 export const FormNewBlock = styled.div`
@@ -110,26 +101,20 @@ export const FormNewInput = styled.input`
   width: 100%;
   outline: none;
   padding: 14px;
-  background: transparent;
-  border: 0.7px solid rgba(148, 166, 190, 0.4);
+  background: ${({ theme }) => theme.inputBg};
+  border: 0.7px solid ${({ theme }) => theme.border};
   border-radius: 8px;
   font-size: 14px;
   line-height: 1;
   letter-spacing: -0.14px;
   margin: 20px 0;
-  &::-moz-placeholder {
-    font-weight: 400;
-    font-size: 14px;
-    line-height: 1px;
-    color: #94a6be;
-    letter-spacing: -0.14px;
-  }
+  color: ${({ theme }) => theme.text};
+
   &::placeholder {
     font-weight: 400;
     font-size: 14px;
-    line-height: 1px;
-    color: #94a6be;
-    letter-spacing: -0.14px;
+    line-height: 1;
+    color: ${({ theme }) => theme.placeholder};
   }
 `;
 
@@ -137,40 +122,34 @@ export const FormNewArea = styled.textarea`
   width: 100%;
   outline: none;
   padding: 14px;
-  background: transparent;
-  border: 0.7px solid rgba(148, 166, 190, 0.4);
+  background: ${({ theme }) => theme.inputBg};
+  border: 0.7px solid ${({ theme }) => theme.border};
   border-radius: 8px;
   font-size: 14px;
   line-height: 1;
   letter-spacing: -0.14px;
-  margin: 20px 0;
   max-width: 370px;
   margin-top: 14px;
   height: 200px;
-  &::-moz-placeholder {
-    font-weight: 400;
-    font-size: 14px;
-    line-height: 1px;
-    color: #94a6be;
-    letter-spacing: -0.14px;
-  }
+  color: ${({ theme }) => theme.text};
+
   &::placeholder {
     font-weight: 400;
     font-size: 14px;
-    line-height: 1px;
-    color: #94a6be;
-    letter-spacing: -0.14px;
+    line-height: 1;
+    color: ${({ theme }) => theme.placeholder};
   }
-  @media screen and (max-width: 495px) {
-    max-width: 100%;
+
+  @media (max-width: 495px) {
     height: 34px;
+    max-width: 100%;
   }
 `;
 
 export const FormNewCreate = styled.button`
   width: 132px;
   height: 30px;
-  background-color: #565eef;
+  background-color: ${({ theme }) => theme.accent};
   border-radius: 4px;
   border: 0;
   outline: none;
@@ -179,11 +158,56 @@ export const FormNewCreate = styled.button`
   line-height: 1;
   color: #ffffff;
   float: right;
+  cursor: pointer;
+  transition: background-color 0.3s;
+
   &:hover {
-    background-color: #33399b;
+    background-color: ${({ theme }) => theme.accentHover};
   }
-  @media screen and (max-width: 495px) {
+
+  @media (max-width: 495px) {
     width: 100%;
     height: 40px;
   }
+`;
+
+export const Categories = styled.div`
+  margin-bottom: 20px;
+`;
+
+export const CategoriesP = styled.p`
+  margin-bottom: 14px;
+  color: ${({ theme }) => theme.text};
+`;
+
+export const CategoriesThemes = styled.div`
+  display: flex;
+  flex-wrap: nowrap;
+  align-items: flex-start;
+  justify-content: flex-start;
+`;
+
+export const CategoriesTheme = styled.div`
+  display: inline-block;
+  width: auto;
+  height: 30px;
+  padding: 8px 20px;
+  border-radius: 24px;
+  margin-right: 7px;
+  opacity: 0.4;
+
+  p {
+    font-size: 14px;
+    font-weight: 600;
+    line-height: 14px;
+    white-space: nowrap;
+    color: ${({ theme }) => theme.text};
+  }
+`;
+
+export const Subtitle = styled.label`
+  color: ${({ theme }) => theme.text};
+  font-size: 14px;
+  font-weight: 600;
+  line-height: 1;
 `;

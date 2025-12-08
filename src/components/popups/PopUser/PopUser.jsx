@@ -1,35 +1,55 @@
-import { Link } from "react-router-dom";
+import React, { useRef, useState, useContext } from "react";
 import {
-  Checkbox,
-  HeaderPopUserSet,
-  PopUserSetA,
-  PopUserSetButton,
-  PopUserSetmail,
-  PopUserSetName,
-  PopUserSetTheme,
-  PopUserSetThemeP,
-} from "./PopUser.styled";
-import { useContext } from "react";
-import { AuthContext } from "../../../context/AuthContext";
+  PopUserContainer,
+  PopUserName,
+  PopUserMail,
+  PopUserTheme,
+  PopUserButton,
+} from "../PopUser/PopUser.styled";
+import PopExit from "../PopExit/PopExit";
+import { ThemeContext } from "../../../contexts/ThemeContext";
 
-const PopUser = () => {
-  const { user } = useContext(AuthContext);
+function PopUser({ $isVisible, onClose }) {
+  const [isExitOpen, setIsExitOpen] = useState(false);
+  const ref = useRef();
+
+  const { theme, toggleTheme } = useContext(ThemeContext);
+
+  const userInfo = JSON.parse(localStorage.getItem("userInfo") || "{}");
+  const userName = userInfo?.name || "Пользователь";
+  const userLogin = userInfo?.login || "Эл. почта";
+
+  if (!$isVisible) return null;
 
   return (
-    <HeaderPopUserSet>
-      <PopUserSetName>{user.name}</PopUserSetName>
-      <PopUserSetmail>{user.login}</PopUserSetmail>
-      <PopUserSetTheme>
-        <PopUserSetThemeP>Темная тема</PopUserSetThemeP>
-        <Checkbox type="checkbox" name="checkbox" />
-      </PopUserSetTheme>
-      <Link to="/exit">
-        <PopUserSetButton type="button">
-          <PopUserSetA>Выйти</PopUserSetA>
-        </PopUserSetButton>
-      </Link>
-    </HeaderPopUserSet>
+    <>
+      <PopUserContainer ref={ref} $isVisible={$isVisible} id="user-set-target">
+        <PopUserName>{userName}</PopUserName>
+        <PopUserMail>{userLogin}</PopUserMail>
+        <PopUserTheme>
+          <p>Темная тема</p>
+          <input
+            type="checkbox"
+            className="checkbox"
+            name="checkbox"
+            checked={theme === "dark"}
+            onChange={toggleTheme}
+          />
+        </PopUserTheme>
+        <PopUserButton type="button" onClick={() => setIsExitOpen(true)}>
+          Выйти
+        </PopUserButton>
+      </PopUserContainer>
+      {isExitOpen && (
+        <PopExit
+          onClose={() => {
+            setIsExitOpen(false);
+            onClose && onClose();
+          }}
+        />
+      )}
+    </>
   );
-};
+}
 
 export default PopUser;

@@ -1,64 +1,84 @@
 import axios from "axios";
 
-const API_URL = "https://wedev-api.sky.pro/api/kanban/";
-export async function fetchTasks({ token }) {
+const API_URL = "https://wedev-api.sky.pro/api/user";
+
+export async function signIn({ login, password }) {
   try {
-    const data = await axios.get(API_URL, {
-      headers: {
-        Authorization: "Bearer " + token,
+    const response = await axios.post(
+      `${API_URL}/login`,
+      {
+        login,
+        password,
       },
-    });
-    return data.data.tasks;
-    // когда работаем с axios, не забываем, что результат лежит в ключе datа
+      {
+        headers: {
+          "Content-Type": "",
+        },
+      }
+    );
+
+    if (response.data.error) {
+      throw new Error(response.data.error);
+    }
+
+    return response.data;
   } catch (error) {
-    throw new Error(error.message);
+    console.error(
+      "Login error details:",
+      error.response?.data || error.message
+    );
+
+    if (error.response) {
+      const errorMessage =
+        error.response.data.message ||
+        error.response.data.error ||
+        "Ошибка при входе";
+      throw new Error(errorMessage);
+    } else if (error.request) {
+      throw new Error("Сервер не отвечает. Проверьте интернет-соединение.");
+    } else {
+      throw new Error("Ошибка при отправке запроса: " + error.message);
+    }
   }
 }
 
-// Функция добавления новой задачи:
-
-export async function postTask({ token, task }) {
+export async function signUp({ name, login, password }) {
   try {
-    const data = await axios.post(API_URL, task, {
-      headers: {
-        Authorization: "Bearer " + token,
-        "Content-Type": "",
+    const response = await axios.post(
+      API_URL,
+      {
+        name,
+        login,
+        password,
       },
-    });
-    return data.data.tasks;
+      {
+        headers: {
+          "Content-Type": "",
+        },
+      }
+    );
+
+    if (response.data.error) {
+      throw new Error(response.data.error);
+    }
+
+    return response.data;
   } catch (error) {
-    throw new Error(error.message);
-  }
-}
+    console.error(
+      "Registration error details:",
+      error.response?.data || error.message
+    );
 
-// Функция изменения задачи:
-
-export async function redactTask({ token, _id, task }) {
-  try {
-    const data = await axios.put(API_URL + _id, task, {
-      headers: {
-        Authorization: "Bearer " + token,
-        "Content-Type": "",
-      },
-    });
-    return data.data;
-  } catch (error) {
-    throw new Error(error.message);
-  }
-}
-
-// Функция удаления задачи:
-
-export async function deleteTask({ token, _id }) {
-  try {
-    const data = await axios.delete(API_URL + _id, {
-      headers: {
-        Authorization: "Bearer " + token,
-        "Content-Type": "",
-      },
-    });
-    return data.data.tasks;
-  } catch (error) {
-    throw new Error(error.message);
+    if (error.response) {
+      const errorMessage =
+        error.response.data.message ||
+        error.response.data.error ||
+        "Ошибка при регистрации";
+      throw new Error(errorMessage);
+    } else if (error.request) {
+      throw new Error("Сервер не отвечает. Проверьте интернет-соединение.");
+    } else {
+      throw new Error("Ошибка при отправке запроса: " + error.message);
+    }
   }
 }
