@@ -1,15 +1,9 @@
 import { useNavigate } from "react-router-dom";
 import Calendar from "../Calendar/Calendar";
-import {
-  Categories,
-  CategoriesPSubttl,
-  CategoriesTheme,
-  CategoriesThemeP,
-  CategoriesThemes,
-  ErrorPB,
-  PopBrowseContainer,
-  Subttl,
-} from "../PopBrowse/PopBrowse.styled";
+import { postTask } from "../../services/api";
+import { useContext, useState } from "react";
+import { AuthContext } from "../../context/AuthContext";
+import { TasksContext } from "../../context/TasksContext";
 import {
   FormNewArea,
   FormNewBlock,
@@ -22,11 +16,15 @@ import {
   PopNewCardTtl,
   PopNewCardWrap,
   SPopNewCard,
+  PopBrowseContainer,
+  Subttl,
+  Categories,
+  CategoriesPSubttl,
+  CategoriesTheme,
+  CategoriesThemeP,
+  CategoriesThemes,
+  ErrorPB,
 } from "./PopNewCard.styled";
-import { postTask } from "../../services/api";
-import { useContext, useState } from "react";
-import { AuthContext } from "../../context/AuthContext";
-import { TasksContext } from "../../context/TasksContext";
 
 const categories = [
   { name: "Web Design", background: "#ffe4c2", color: "#ff6d00" },
@@ -35,12 +33,13 @@ const categories = [
 ];
 
 const PopNewCard = () => {
-  const { tasks, setTasks } = useContext(TasksContext);
+  const { setTasks } = useContext(TasksContext);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
   const { user } = useContext(AuthContext);
   const navigate = useNavigate();
-  const [selectedCategory, setSelectedCategory] = useState("");
+
+  const [selectedCategory, setSelectedCategory] = useState("Research");
   const [formData, setFormData] = useState({
     title: "",
     description: "",
@@ -49,42 +48,80 @@ const PopNewCard = () => {
     date: null,
   });
 
-  // состояние ошибок
-  const [errors, setErrors] = useState({
-    title: "",
-    description: "",
-    status: "",
-    topic: "",
-    date: "",
-  });
-
   const handleChange = (e) => {
     const { name, value } = e.target;
     setFormData({
       ...formData,
       [name]: value,
     });
-    setErrors({ ...errors, [name]: false });
     setError("");
-  };
-
-  const addNewTask = async (e) => {
-    e.preventDefault();
-    setLoading(true);
-    try {
-      const newTasks = await postTask({ token: user?.token, task: formData });
-      setTasks(newTasks);
-      handleClose(true);
-    } catch (error) {
-      setError("Ошибка добавления задачи", error.message);
-    } finally {
-      setLoading(false);
-    }
   };
 
   const handleCategoryClick = (categoryName) => {
     setSelectedCategory(categoryName);
     setFormData({ ...formData, topic: categoryName });
+  };
+
+  const handleDateSelect = (date) => {
+    setFormData({ ...formData, date });
+  };
+
+  const validateForm = () => {
+    if (!formData.title.trim()) {
+      setError("Введите название задачи");
+      return false;
+    }
+
+    if (!formData.description.trim()) {
+      setError("Введите описание задачи");
+      return false;
+    }
+
+    if (!formData.topic) {
+      setError("Выберите категорию задачи");
+      return false;
+    }
+
+    return true;
+  };
+
+  const addNewTask = async (e) => {
+    e.preventDefault();
+
+    if (!validateForm()) {
+      return;
+    }
+
+    if (!user?.token) {
+      setError("Пользователь не авторизован");
+      return;
+    }
+
+    setLoading(true);
+    setError("");
+
+    try {
+      const newTask = {
+        title: formData.title,
+        description: formData.description,
+        topic: formData.topic,
+        status: formData.status,
+        date: formData.date,
+      };
+
+      const newTasks = await postTask({
+        token: user.token,
+        task: newTask,
+      });
+
+      setTasks(newTasks);
+      handleClose();
+    } catch (error) {
+      setError(`Ошибка добавления задачи: ${error.message}`);
+      console.error("Ошибка при добавлении задачи:", error);
+    } finally {
+      setLoading(false);
+    }
   };
 
   const handleClose = () => {
@@ -97,57 +134,76 @@ const PopNewCard = () => {
         <PopNewCardBlock>
           <PopNewCardContent>
             <PopNewCardTtl>Создание задачи</PopNewCardTtl>
-            <PopNewCardClose onClick={handleClose}>&#10006;</PopNewCardClose>
-            <PopNewCardWrap>
-              <PopNewCardForm onSubmit={addNewTask}>
-                <FormNewBlock>
-                  <Subttl>Название задачи</Subttl>
-                  <FormNewInput
-                    type="text"
-                    name="title"
-                    id="formTitle"
-                    placeholder="Введите название задачи..."
-                    value={formData.name}
-                    onChange={handleChange}
-                    autoFocus
-                  />
-                </FormNewBlock>
-                <FormNewBlock onSubmit={(e) => e.preventDefault()}>
-                  <Subttl>Описание задачи</Subttl>
-                  <FormNewArea
-                    type="text"
-                    name="description"
-                    id="textArea"
-                    placeholder="Введите описание задачи..."
-                    value={formData.text}
-                    onChange={handleChange}
-                  ></FormNewArea>
-                </FormNewBlock>
-              </PopNewCardForm>
-              <Calendar
-                selected={formData.date}
-                setSelected={(date) => setFormData({ ...formData, date })}
-              />
-            </PopNewCardWrap>
-            <ErrorPB>{error}</ErrorPB>
-            <Categories>
-              <CategoriesPSubttl>Категория</CategoriesPSubttl>
-              <CategoriesThemes>
-                {categories.map((category) => (
-                  <CategoriesTheme
-                    key={category.name}
-                    $background={category.background}
-                    $isActive={selectedCategory === category.name}
-                    onClick={() => handleCategoryClick(category.name)}
-                  >
-                    <CategoriesThemeP $color={category.color}>
-                      {category.name}
-                    </CategoriesThemeP>
-                  </CategoriesTheme>
-                ))}
-              </CategoriesThemes>
-            </Categories>
-            <FormNewCreate onClick={addNewTask}>Создать задачу</FormNewCreate>
+            <PopNewCardClose onClick={handleClose} aria-label="Закрыть">
+              &#10006;
+            </PopNewCardClose>
+
+            <PopNewCardForm onSubmit={addNewTask}>
+              <PopNewCardWrap>
+                <div>
+                  <FormNewBlock>
+                    <Subttl>Название задачи</Subttl>
+                    <FormNewInput
+                      type="text"
+                      name="title"
+                      id="formTitle"
+                      placeholder="Введите название задачи..."
+                      value={formData.title}
+                      onChange={handleChange}
+                      autoFocus
+                      required
+                      disabled={loading}
+                    />
+                  </FormNewBlock>
+
+                  <FormNewBlock>
+                    <Subttl>Описание задачи</Subttl>
+                    <FormNewArea
+                      name="description"
+                      id="textArea"
+                      placeholder="Введите описание задачи..."
+                      value={formData.description}
+                      onChange={handleChange}
+                      required
+                      disabled={loading}
+                    />
+                  </FormNewBlock>
+                </div>
+
+                <Calendar
+                  selected={formData.date}
+                  setSelected={handleDateSelect}
+                  disabled={loading}
+                />
+              </PopNewCardWrap>
+
+              <Categories>
+                <CategoriesPSubttl>Категория</CategoriesPSubttl>
+                <CategoriesThemes>
+                  {categories.map((category) => (
+                    <CategoriesTheme
+                      key={category.name}
+                      $background={category.background}
+                      $isActive={selectedCategory === category.name}
+                      onClick={() =>
+                        !loading && handleCategoryClick(category.name)
+                      }
+                      title={category.name}
+                    >
+                      <CategoriesThemeP $color={category.color}>
+                        {category.name}
+                      </CategoriesThemeP>
+                    </CategoriesTheme>
+                  ))}
+                </CategoriesThemes>
+              </Categories>
+
+              <ErrorPB>{error}</ErrorPB>
+
+              <FormNewCreate type="submit" disabled={loading}>
+                {loading ? "Создание..." : "Создать задачу"}
+              </FormNewCreate>
+            </PopNewCardForm>
           </PopNewCardContent>
         </PopNewCardBlock>
       </PopBrowseContainer>
