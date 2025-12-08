@@ -1,4 +1,11 @@
-import { createContext, useContext, useEffect, useMemo, useState } from "react";
+import {
+  createContext,
+  useContext,
+  useEffect,
+  useMemo,
+  useState,
+  useCallback,
+} from "react";
 import {
   fetchTasks as apiFetch,
   createTask as apiCreate,
@@ -33,14 +40,17 @@ export function TaskProvider({ children }) {
   const [operationLoading, setOperationLoading] = useState(false);
   const [operationError, setOperationError] = useState(null);
 
-  const normalizeTasks = (arr) =>
-    (Array.isArray(arr) ? arr : []).map((t) => ({
-      ...t,
-      id: t.id ?? t._id ?? t.taskId ?? t.uuid,
-      status: toUiStatusMap[t.status] || t.status,
-    }));
+  const normalizeTasks = useCallback(
+    (arr) =>
+      (Array.isArray(arr) ? arr : []).map((t) => ({
+        ...t,
+        id: t.id ?? t._id ?? t.taskId ?? t.uuid,
+        status: toUiStatusMap[t.status] || t.status,
+      })),
+    []
+  );
 
-  const loadTasks = async () => {
+  const loadTasks = useCallback(async () => {
     if (!token) return;
     setTasksLoading(true);
     setTasksError(null);
@@ -53,7 +63,7 @@ export function TaskProvider({ children }) {
     } finally {
       setTasksLoading(false);
     }
-  };
+  }, [token, normalizeTasks]);
 
   useEffect(() => {
     if (isAuth) {
@@ -61,59 +71,68 @@ export function TaskProvider({ children }) {
     } else {
       setTasks([]);
     }
-  }, [isAuth]);
+  }, [isAuth, loadTasks]);
 
-  const clearOperationError = () => setOperationError(null);
+  const clearOperationError = useCallback(() => setOperationError(null), []);
 
-  const createTask = async (task) => {
-    setOperationLoading(true);
-    setOperationError(null);
-    try {
-      const apiTask = {
-        ...task,
-        status: toApiStatusMap[task.status] || task.status,
-      };
-      await apiCreate({ token, task: apiTask });
-      await loadTasks();
-    } catch (e) {
-      setOperationError(e.message || "Ошибка при создании задачи");
-      throw e;
-    } finally {
-      setOperationLoading(false);
-    }
-  };
+  const createTask = useCallback(
+    async (task) => {
+      setOperationLoading(true);
+      setOperationError(null);
+      try {
+        const apiTask = {
+          ...task,
+          status: toApiStatusMap[task.status] || task.status,
+        };
+        await apiCreate({ token, task: apiTask });
+        await loadTasks();
+      } catch (e) {
+        setOperationError(e.message || "Ошибка при создании задачи");
+        throw e;
+      } finally {
+        setOperationLoading(false);
+      }
+    },
+    [token, loadTasks]
+  );
 
-  const updateTask = async (id, task) => {
-    setOperationLoading(true);
-    setOperationError(null);
-    try {
-      const apiTask = {
-        ...task,
-        status: toApiStatusMap[task.status] || task.status,
-      };
-      await apiUpdate({ token, id, task: apiTask });
-      await loadTasks();
-    } catch (e) {
-      setOperationError(e.message || "Ошибка при обновлении задачи");
-      throw e;
-    } finally {
-      setOperationLoading(false);
-    }
-  };
+  const updateTask = useCallback(
+    async (id, task) => {
+      setOperationLoading(true);
+      setOperationError(null);
+      try {
+        const apiTask = {
+          ...task,
+          status: toApiStatusMap[task.status] || task.status,
+        };
+        await apiUpdate({ token, id, task: apiTask });
+        await loadTasks();
+      } catch (e) {
+        setOperationError(e.message || "Ошибка при обновлении задачи");
+        throw e;
+      } finally {
+        setOperationLoading(false);
+      }
+    },
+    [token, loadTasks]
+  );
 
-  const deleteTask = async (id) => {
-    setOperationLoading(true);
-    setOperationError(null);
-    try {
-      await apiDelete({ token, id });
-      await loadTasks();
-    } catch (e) {
-      setOperationError(e.message || "Ошибка при удалении задачи");
-      throw e;
-    } finally {
-      setOperationLoading(false);
-    }
-  };
+  const deleteTask = useCallback(
+    async (id) => {
+      setOperationLoading(true);
+      setOperationError(null);
+      try {
+        await apiDelete({ token, id });
+        await loadTasks();
+      } catch (e) {
+        setOperationError(e.message || "Ошибка при удалении задачи");
+        throw e;
+      } finally {
+        setOperationLoading(false);
+      }
+    },
+    [token, loadTasks]
+  );
 
   const value = useMemo(
     () => ({
@@ -128,7 +147,18 @@ export function TaskProvider({ children }) {
       updateTask,
       deleteTask,
     }),
-    [tasks, tasksLoading, tasksError, operationLoading, operationError]
+    [
+      tasks,
+      tasksLoading,
+      tasksError,
+      operationLoading,
+      operationError,
+      clearOperationError,
+      loadTasks,
+      createTask,
+      updateTask,
+      deleteTask,
+    ]
   );
 
   return <TaskContext.Provider value={value}>{children}</TaskContext.Provider>;

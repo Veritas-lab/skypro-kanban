@@ -7,7 +7,7 @@ import {
   LoadingText,
   EmptyTasksText,
 } from "./Main.styled";
-import { useTasks } from "../../contexts/TaskContext";
+import { useTasks } from "../../context/TaskContext";
 
 function Main() {
   const { tasks, tasksLoading, tasksError } = useTasks();
