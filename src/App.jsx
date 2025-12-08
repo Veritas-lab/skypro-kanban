@@ -1,7 +1,7 @@
 import "./App.css";
-import AppRoutes from "./components/AppRoutes/AppRoutes";
+import AppRoutes from "./components/AppRoytes/AppRoutes";
 import AuthProvider from "./context/AuthProvider";
-import GlobalStyle from "./GlobalStyles/GlobalStyles.styled";
+import GlobalStyle from "./GlobalStyles/GlobalStyled";
 
 function App() {
   return (
