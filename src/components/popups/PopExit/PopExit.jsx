@@ -9,7 +9,7 @@ import {
   PopExitYesButton,
   PopExitNoButton,
 } from "../PopExit/PopExit.styled";
-import { useAuth } from "../../../contexts/AuthContext";
+import { useAuth } from "../../../context/AuthContext";
 
 function PopExit({ onClose }) {
   const navigate = useNavigate();

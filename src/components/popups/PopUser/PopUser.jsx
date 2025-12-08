@@ -7,7 +7,7 @@ import {
   PopUserButton,
 } from "../PopUser/PopUser.styled";
 import PopExit from "../PopExit/PopExit";
-import { ThemeContext } from "../../../contexts/ThemeContext";
+import { ThemeContext } from "../../../context/ThemeContext";
 
 function PopUser({ $isVisible, onClose }) {
   const [isExitOpen, setIsExitOpen] = useState(false);
