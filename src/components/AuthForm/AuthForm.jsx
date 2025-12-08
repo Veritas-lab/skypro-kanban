@@ -1,175 +1,166 @@
+import { ErrorText } from "./AuthForm.styled";
 import { Link, useNavigate } from "react-router-dom";
-import Input from "../Input/Input";
+import { useState } from "react";
 import {
-  FTitle,
-  Modal,
-  Bg,
-  FWrapper,
-  Form,
+  AuthBg,
+  AuthModal,
+  AuthWrapper,
+  AuthTitle,
+  AuthFormstyle,
   InputWrapper,
-  FormGroupP,
-  FormGroupPLink,
-} from "./AuthForm.styled";
-import BaseButton from "../BaseButton/BaseButton";
-import { useContext, useState } from "react";
-import { signIn, signUp } from "../../services/auth";
-import { ErrorP } from "../Input/Input.styled";
-import { AuthContext } from "../../context/AuthContext";
+  AuthInput,
+  ButtonEnter,
+  FormGroup,
+} from "./AuthForm.styled.js";
+import { GlobalStyles } from "../../styles/GlobalStyles.styled.js";
+import { useAuth } from "../../contexts/AuthContext";
 
-const AuthForm = ({ isSignUp }) => {
+function AuthForm({ isSignUp }) {
   const navigate = useNavigate();
-  const { updateUserInfo } = useContext(AuthContext);
-  // Получаем setUser из хука useContext
-  // состояние полей
+  const { login, register, isAuthLoading } = useAuth();
+
   const [formData, setFormData] = useState({
     name: "",
     login: "",
     password: "",
   });
-
-  // состояние ошибок
   const [errors, setErrors] = useState({
-    name: "",
-    login: "",
-    password: "",
+    name: false,
+    login: false,
+    password: false,
   });
+  const [localError, setLocalError] = useState("");
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
-  // состояние текста ошибки, чтобы показать её пользователю
-  const [error, setError] = useState("");
+  const error = localError;
 
-  // функция валидации
   const validateForm = () => {
-    const newErrors = { name: "", login: "", password: "" };
-    let isValid = true;
-
-    if (isSignUp && !formData.name.trim()) {
-      newErrors.name = true;
-      setError(
-        "Введенные вами данные не корректны. Чтобы завершить регистрацию, введите данные корректно и повторите попытку."
-      );
-      isValid = false;
-    }
-
-    if (!formData.login.trim()) {
-      newErrors.login = true;
-      setError(
-        "Введенные вами данные не корректны. Чтобы завершить регистрацию, введите данные корректно и повторите попытку."
-      );
-      isValid = false;
-    }
-
-    if (!formData.password.trim()) {
-      newErrors.password = true;
-      setError(
-        "Введенные вами данные не корректны. Чтобы завершить регистрацию, заполните все поля в форме."
-      );
-      isValid = false;
-    }
-
+    const newErrors = {
+      name: isSignUp && !formData.name.trim(),
+      login: !formData.login.trim(),
+      password: !formData.password.trim(),
+    };
     setErrors(newErrors);
-    return isValid;
+    if (newErrors.name || newErrors.login || newErrors.password) {
+      setLocalError("Заполните все обязательные поля");
+      return false;
+    }
+    return true;
   };
 
-  // функция, которая отслеживает в полях изменения
-  // и меняет состояние компонента
   const handleChange = (e) => {
     const { name, value } = e.target;
-    setFormData({
-      ...formData,
-      [name]: value,
-    });
-    setErrors({ ...errors, [name]: false });
-    setError("");
+    setFormData((prev) => ({ ...prev, [name]: value }));
+    if (errors[name]) setErrors((prev) => ({ ...prev, [name]: false }));
+    if (error) setLocalError("");
   };
 
-  // функция отправки формы
   const handleSubmit = async (e) => {
     e.preventDefault();
-    if (!validateForm()) {
-      // если у нас форма не прошла валидацию, то дальше не продолжаем
-      return;
-    }
-    try {
-      // чтобы не писать две разных функции, выберем нужный запрос через
-      // тернарный оператор
-      const data = !isSignUp
-        ? await signIn({ login: formData.login, password: formData.password })
-        : await signUp(formData);
+    if (!validateForm()) return;
+    if (isAuthLoading || isSubmitting) return;
 
-      if (data) {
-        updateUserInfo(data);
-        navigate("/");
+    setIsSubmitting(true);
+    setLocalError("");
+
+    try {
+      if (isSignUp) {
+        await register(formData);
+      } else {
+        await login({ login: formData.login, password: formData.password });
       }
+      navigate("/");
     } catch (err) {
-      setError(err.message);
+      setLocalError(
+        err.message ||
+          (isSignUp ? "Ошибка при регистрации" : "Ошибка при входе")
+      );
+    } finally {
+      setIsSubmitting(false);
     }
   };
 
+  const isSubmitDisabled =
+    isSubmitting ||
+    isAuthLoading ||
+    !formData.login.trim() ||
+    !formData.password.trim() ||
+    (isSignUp && !formData.name.trim());
+
   return (
-    <Bg>
-      <Modal>
-        <FWrapper>
-          <FTitle>{isSignUp ? "Регистрация" : "Вход"}</FTitle>
-          <Form id="form" onSubmit={handleSubmit}>
-            <InputWrapper>
-              {isSignUp && (
-                <Input
-                  error={errors.name}
+    <>
+      <GlobalStyles />
+      <AuthBg>
+        <AuthModal $isSignUp={isSignUp}>
+          <AuthWrapper>
+            <AuthTitle>{isSignUp ? "Регистрация" : "Вход"}</AuthTitle>
+            <AuthFormstyle onSubmit={handleSubmit}>
+              <InputWrapper>
+                {isSignUp && (
+                  <AuthInput
+                    $error={errors.name}
+                    type="text"
+                    name="name"
+                    placeholder="Имя"
+                    value={formData.name}
+                    onChange={handleChange}
+                    disabled={isSubmitting || isAuthLoading}
+                  />
+                )}
+                <AuthInput
+                  $error={errors.login}
                   type="text"
-                  name="name"
-                  id="formname"
-                  placeholder="Имя"
-                  value={formData.name}
+                  name="login"
+                  placeholder="Эл. почта"
+                  value={formData.login}
                   onChange={handleChange}
+                  autoComplete="username"
+                  disabled={isSubmitting || isAuthLoading}
                 />
-              )}
-              <Input
-                error={errors.login}
-                type="text"
-                name="login"
-                id="formlogin"
-                placeholder="Эл. почта"
-                value={formData.login}
-                onChange={handleChange}
-              />
-              <Input
-                error={errors.password}
-                type="password"
-                name="password"
-                id="formpassword"
-                placeholder="Пароль"
-                value={formData.password}
-                onChange={handleChange}
-              />
-            </InputWrapper>
-            <ErrorP>{error}</ErrorP>
-            <BaseButton
-              onClick={handleSubmit}
-              type="submit"
-              disabled={error}
-              text={isSignUp ? "Зарегистрироваться" : "Войти"}
-            />
-            {!isSignUp && (
-              <FormGroupP>
-                <p>Нужно зарегистрироваться?</p>
-                <Link to="/sign-up">
-                  <FormGroupPLink>Регистрируйтесь здесь</FormGroupPLink>
+                <AuthInput
+                  $error={errors.password}
+                  type="password"
+                  name="password"
+                  placeholder="Пароль"
+                  autoComplete="current-password"
+                  value={formData.password}
+                  onChange={handleChange}
+                  disabled={isSubmitting || isAuthLoading}
+                />
+              </InputWrapper>
+
+              {error && <ErrorText>{error}</ErrorText>}
+
+              <ButtonEnter
+                type="submit"
+                disabled={isSubmitDisabled}
+                style={{
+                  backgroundColor: isSubmitDisabled ? "#94A6BE" : "#565EEF",
+                  color: "#ffffff",
+                  cursor: isSubmitDisabled ? "not-allowed" : "pointer",
+                }}
+              >
+                {isSubmitting || isAuthLoading
+                  ? "Загрузка..."
+                  : isSignUp
+                  ? "Зарегистрироваться"
+                  : "Войти"}
+              </ButtonEnter>
+
+              <FormGroup $isSignUp={isSignUp}>
+                <p>
+                  {isSignUp ? "Уже есть аккаунт?" : "Нужно зарегистрироваться?"}
+                </p>
+                <Link to={isSignUp ? "/login" : "/register"}>
+                  {isSignUp ? "Войдите здесь" : "Регистрируйтесь здесь"}
                 </Link>
-              </FormGroupP>
-            )}
-            {isSignUp && (
-              <FormGroupP>
-                <p>Уже есть аккаунт?</p>
-                <Link to="/sign-in">
-                  <FormGroupPLink>Войдите здесь</FormGroupPLink>
-                </Link>
-              </FormGroupP>
-            )}
-          </Form>
-        </FWrapper>
-      </Modal>
-    </Bg>
+              </FormGroup>
+            </AuthFormstyle>
+          </AuthWrapper>
+        </AuthModal>
+      </AuthBg>
+    </>
   );
-};
+}
 
 export default AuthForm;

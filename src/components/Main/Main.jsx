@@ -1,46 +1,51 @@
-import { useContext, useMemo } from "react";
-import { TasksContext } from "../../context/TasksContext";
+import React from "react";
 import Column from "../Column/Column";
-import { SContainer } from "../Header/Header.styled";
-import { SMain, MainBlock, MainContent } from "./Main.styled";
+import { statusList } from "../../data.js";
+import {
+  MainBlock,
+  MainContent,
+  LoadingText,
+  EmptyTasksText,
+} from "./Main.styled";
+import { useTasks } from "../../contexts/TaskContext";
 
-const defaultColumnTitles = [
-  "Нужно сделать",
-  "В работе",
-  "Тестирование",
-  "Готово",
-];
+function Main() {
+  const { tasks, tasksLoading, tasksError } = useTasks();
 
-const Main = () => {
-  const { tasks, loading } = useContext(TasksContext);
-
-  const columnTitles = useMemo(() => {
-    if (!tasks || tasks.length === 0) {
-      return defaultColumnTitles;
-    }
-
-    const uniqueStatuses = [...new Set(tasks.map((task) => task.status))];
-    return uniqueStatuses || defaultColumnTitles;
-  }, [tasks]);
+  if (tasksError) {
+    return (
+      <MainBlock>
+        <div className="container">
+          <MainContent>
+            <LoadingText>Ошибка загрузки: {tasksError}</LoadingText>
+          </MainContent>
+        </div>
+      </MainBlock>
+    );
+  }
 
   return (
-    <SMain>
-      <SContainer>
-        <MainBlock>
-          <MainContent>
-            {columnTitles.map((title, index) => (
-              <Column
-                key={index}
-                title={title}
-                tasks={tasks.filter((task) => task.status === title)}
-                loading={loading}
-              />
-            ))}
-          </MainContent>
-        </MainBlock>
-      </SContainer>
-    </SMain>
+    <MainBlock>
+      <div className="container">
+        <MainContent>
+          {tasksLoading ? (
+            <LoadingText>Данные загружаются...</LoadingText>
+          ) : tasks.length === 0 ? (
+            <EmptyTasksText>Новых задач нет</EmptyTasksText>
+          ) : (
+            statusList.map((status) => {
+              const filteredTasks = tasks.filter(
+                (task) => task.status === status
+              );
+              return (
+                <Column key={status} title={status} cards={filteredTasks} />
+              );
+            })
+          )}
+        </MainContent>
+      </div>
+    </MainBlock>
   );
-};
+}
 
 export default Main;

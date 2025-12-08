@@ -1,50 +1,64 @@
-import { Link } from "react-router-dom";
-import Button from "../Button/Button";
-import PopUser from "../PopUser/PopUser";
+import React, { useState, useContext } from "react";
+import { useNavigate, Link } from "react-router-dom";
+import PopUser from "../popups/PopUser/PopUser";
+import { ThemeContext } from "../../contexts/ThemeContext";
 import {
-  Dark,
-  SHeader,
-  SContainer,
   HeaderBlock,
+  HeaderContent,
   HeaderLogo,
   HeaderNav,
-  Img,
+  HeaderButton,
   HeaderUser,
 } from "./Header.styled";
-import { useContext } from "react";
-import { AuthContext } from "../../context/AuthContext";
 
-const Header = ({ isModalOpen, toggleModal }) => {
-  const { user } = useContext(AuthContext);
+function Header() {
+  const [isUserPopupOpen, setIsUserPopupOpen] = useState(false);
+  const navigate = useNavigate();
+  const { theme } = useContext(ThemeContext);
+
+  const toggleUserPopup = () => {
+    setIsUserPopupOpen((prev) => !prev);
+  };
+
+  const userName =
+    JSON.parse(localStorage.getItem("userInfo") || "{}").name || "Пользователь";
+
+  const logoSrc =
+    theme === "dark" ? "/assets/logo_dark.png" : "/assets/logo.png";
 
   return (
-    <SHeader>
-      <SContainer>
-        <HeaderBlock>
+    <HeaderBlock>
+      <div className="container">
+        <HeaderContent>
           <HeaderLogo>
-            <a href="" target="_self">
-              <Img src="../images/logo.png" alt="logo" />
-            </a>
-          </HeaderLogo>
-          <HeaderLogo>
-            <Dark>
-              <a href="" target="_self">
-                <Img src="../images/logo_dark.png" alt="logo" />
-              </a>
-            </Dark>
+            <Link to="/" target="_self">
+              <img src={logoSrc} alt="logo" />
+            </Link>
           </HeaderLogo>
           <HeaderNav>
-            <Link to="/card/add">
-              {" "}
-              <Button text="Создать новую задачу" />
-            </Link>
-            <HeaderUser onClick={toggleModal}>{user.name}</HeaderUser>
-            {isModalOpen ? <PopUser isModalOpen={isModalOpen} /> : null}
+            <HeaderButton
+              className="_hover01"
+              id="btnMainNew"
+              onClick={() => navigate("new-card")}
+            >
+              Создать новую задачу
+            </HeaderButton>
+            <HeaderUser
+              href="#user-set-target"
+              className="_hover02"
+              onClick={(e) => {
+                e.preventDefault();
+                toggleUserPopup();
+              }}
+            >
+              {userName}
+            </HeaderUser>
+            <PopUser $isVisible={isUserPopupOpen} onClose={toggleUserPopup} />
           </HeaderNav>
-        </HeaderBlock>
-      </SContainer>
-    </SHeader>
+        </HeaderContent>
+      </div>
+    </HeaderBlock>
   );
-};
+}
 
 export default Header;

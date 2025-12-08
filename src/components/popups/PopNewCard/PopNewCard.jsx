@@ -1,5 +1,5 @@
 import { useNavigate } from "react-router-dom";
-import Calendar from "../Calendar/Calendar";
+import Calendar from "../../Calendar/Calendar";
 import {
   Categories,
   CategoriesPSubttl,
@@ -23,10 +23,10 @@ import {
   PopNewCardWrap,
   SPopNewCard,
 } from "./PopNewCard.styled";
-import { postTask } from "../../services/api";
+import { postTask } from "../../../services/api";
 import { useContext, useState } from "react";
-import { AuthContext } from "../../context/AuthContext";
-import { TasksContext } from "../../context/TasksContext";
+import { AuthContext } from "../../../context/AuthContext";
+import { TasksContext } from "../../../context/TasksContext";
 
 const categories = [
   { name: "Web Design", background: "#ffe4c2", color: "#ff6d00" },
@@ -35,8 +35,8 @@ const categories = [
 ];
 
 const PopNewCard = () => {
-  const { tasks, setTasks } = useContext(TasksContext);
-  const [loading, setLoading] = useState(false);
+  const { setTasks } = useContext(TasksContext);
+  const [setLoading] = useState(false);
   const [error, setError] = useState("");
   const { user } = useContext(AuthContext);
   const navigate = useNavigate();

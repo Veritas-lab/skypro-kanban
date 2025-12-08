@@ -1,78 +1,141 @@
 import styled from "styled-components";
 
-export const Bg = styled.div`
-  position: fixed;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background: rgba(234, 238, 246, 1);
-`;
-
-export const Modal = styled.div`
+export const AuthBg = styled.div`
   width: 100%;
-  height: 100%;
-  min-width: 320px;
+  height: 100vh;
   min-height: 100vh;
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
-`;
-export const FWrapper = styled.div`
-  display: block;
-  margin: 0 auto;
-  background-color: rgba(255, 255, 255, 1);
-  max-width: 368px;
-  width: 100%;
-  padding: 50px 60px;
-  border-radius: 10px;
-  border: 0.7px solid rgba(212, 219, 229, 1);
-  box-shadow: 0px 4px 67px -12px rgba(0, 0, 0, 0.13);
+  background: rgba(9, 30, 63, 0.3);
 `;
 
-export const FTitle = styled.h2`
+export const AuthModal = styled.div`
+  width: 368px;
+  min-height: ${({ $isSignUp }) => ($isSignUp ? "345px" : "329px")};
+  height: auto;
+  padding: 50px 60px 50px 60px;
+  background-color: ${({ theme }) => theme.modalBg};
+  border-radius: 10px;
+  position: relative;
+  box-shadow: 0px 4px 40px -10px rgba(0, 0, 0, 0.1);
+
+  @media (max-width: 375px) {
+    width: 100%;
+    padding: 20px;
+  }
+`;
+
+export const AuthWrapper = styled.div`
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+`;
+
+export const AuthTitle = styled.h2`
+  color: ${({ theme }) => theme.text};
+  font-family: Roboto;
   font-weight: 700;
   font-size: 20px;
   line-height: 150%;
-  color: rgba(0, 0, 0, 1);
-  font-style: bold;
-  letter-spacing: -3%;
+  letter-spacing: -0.03em;
   text-align: center;
-  margin-bottom: 20px;
 `;
 
-export const Form = styled.form`
+export const AuthFormstyle = styled.form`
+  width: 100%;
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  gap: 20px;
-  width: 100%;
 `;
 
 export const InputWrapper = styled.div`
+  width: 248px;
   display: flex;
   flex-direction: column;
-  width: 100%;
   gap: 7px;
+  margin-bottom: 20px;
+  margin-top: 20px;
 `;
 
-export const FormGroupP = styled.div`
+export const AuthInput = styled.input`
+  width: 100%;
+  height: 30px;
+  border-radius: 8px;
+  border: 0.7px solid ${({ $error, theme }) => ($error ? "red" : theme.border)};
+  outline: none;
+  padding: 4.5px 10px;
+  font-family: Roboto;
   font-weight: 400;
   font-size: 14px;
   line-height: 150%;
-  color: rgba(148, 166, 190, 0.4);
-  letter-spacing: -1%;
-  text-align: center;
+  letter-spacing: -0.02em;
+  background: ${({ theme }) => theme.inputBg};
+  color: ${({ theme }) => theme.text};
+
+  &::placeholder {
+    color: ${({ theme }) => theme.placeholder};
+  }
 `;
 
-export const FormGroupPLink = styled.p`
-  font-weight: 400;
+export const ButtonEnter = styled.button`
+  width: 248px;
+  height: 30px;
+  background-color: ${({ theme }) => theme.accent};
+  border-radius: 4px;
+  color: #ffffff;
   font-size: 14px;
-  line-height: 150%;
-  color: rgba(148, 166, 190, 0.4);
-  letter-spacing: -1%;
-  text-decoration: underline rgba(148, 166, 190, 0.4);
-  text-align: center;
+  font-weight: 500;
+  line-height: 21px;
+  letter-spacing: -0.14px;
+  border: none;
+  cursor: pointer;
+  transition: all 0.3s ease-in-out;
+
+  &:hover {
+    background-color: ${({ theme }) => theme.accentHover};
+  }
+`;
+
+export const FormGroup = styled.div`
+  display: flex;
+  flex-direction: ${({ $isSignUp }) => ($isSignUp ? "row" : "column")};
+  justify-content: center;
+  align-items: center;
+  margin-top: 20px;
+  gap: ${({ $isSignUp }) => ($isSignUp ? "5px" : "0px")};
+
+  p {
+    color: ${({ theme }) => theme.mutedText};
+    line-height: 21px;
+    letter-spacing: -0.14px;
+    font-family: Roboto;
+    font-weight: 400;
+    font-size: 14px;
+  }
+
+  a {
+    color: ${({ theme }) => theme.mutedText};
+    line-height: 21px;
+    letter-spacing: -0.14px;
+    text-decoration: underline;
+    cursor: pointer;
+    font-family: Roboto;
+    font-weight: 400;
+    font-size: 14px;
+
+    &:hover {
+      color: ${({ theme }) => theme.accent};
+    }
+  }
+`;
+
+export const ErrorText = styled.p`
+  color: #f84d4d;
+  font-size: 12px;
+  margin: 7px 0 20px 0;
+  font-family: Arial;
 `;

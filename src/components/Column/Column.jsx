@@ -1,33 +1,31 @@
-import { useContext } from "react";
+import React from "react";
 import Card from "../Card/Card";
-import CardLoader from "../CardLoader/CardLoader";
-import { Cards, ColumnTitle, MainColumn, PTitle } from "./Column.styled";
-import { TasksContext } from "../../context/TasksContext";
-import { CalendarDateEnd } from "../Calendar/Calendar.styled";
+import { ColumnWrapper, ColumnTitle, CardsContainer } from "./Column.styled";
 
-const Column = ({ title, loading, filteredTasks }) => {
-  const { tasks } = useContext(TasksContext);
-  filteredTasks = Array.isArray(tasks)
-    ? tasks.filter((card) => card.status === title)
-    : [];
+function Column({ title, cards }) {
   return (
-    <MainColumn>
+    <ColumnWrapper>
       <ColumnTitle>
-        <PTitle>{title}</PTitle>
+        <p>{title}</p>
       </ColumnTitle>
-      <Cards>
-        {loading ? (
-          Array.from({ length: 3 }).map((_, index) => (
-            <CardLoader key={`loader-${index}`} />
+      <CardsContainer>
+        {cards && cards.length > 0 ? (
+          cards.map((card, index) => (
+            <Card
+              key={card.id ?? `${card.title || "no-title"}-${index}`}
+              card={card}
+            />
           ))
-        ) : filteredTasks.length > 0 ? (
-          filteredTasks.map((card) => <Card card={card} key={card._id} />)
         ) : (
-          <CalendarDateEnd>Нет задач</CalendarDateEnd>
+          <div
+            style={{ padding: "10px", color: "#94A6BE", fontStyle: "italic" }}
+          >
+            Нет задач
+          </div>
         )}
-      </Cards>
-    </MainColumn>
+      </CardsContainer>
+    </ColumnWrapper>
   );
-};
+}
 
 export default Column;
