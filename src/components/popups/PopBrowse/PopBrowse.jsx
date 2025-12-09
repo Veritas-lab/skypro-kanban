@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import Calendar from "../../Calendar/Calendar.jsx";
+import Calendar from "../../Calendar/Calendar";
 import {
   PopBrowseStyled,
   PopBrowseContainer,

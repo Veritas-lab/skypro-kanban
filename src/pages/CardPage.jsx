@@ -1,7 +1,7 @@
 import { useParams, useNavigate } from "react-router-dom";
 import PopBrowse from "../components/popups/PopBrowse/PopBrowse.jsx";
 import { useMemo, useEffect } from "react";
-import { useTasks } from "../context/TaskContext";
+import { useTasks } from "../contexts/TaskContext";
 
 function CardPage() {
   const { id } = useParams();
