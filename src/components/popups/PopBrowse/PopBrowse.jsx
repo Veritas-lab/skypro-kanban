@@ -20,7 +20,7 @@ import {
   CategoryTheme,
 } from "./PopBrowse.styled";
 import { statusList } from "../../../data.js";
-import { useTasks } from "../../../context/TaskContext";
+import { useTasks } from "../../../contexts/TaskContext";
 
 const formatDateForServer = (dateString) => {
   if (!dateString) return "";
