@@ -1,4 +1,4 @@
-import { useNavigate, useLocation } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import {
   CardItem,
   CardWrapper,
@@ -15,23 +15,45 @@ export const formatDisplayDate = (date) => {
   if (typeof date === "string" && /^\d{2}\.\d{2}\.\d{4}$/.test(date)) {
     return date;
   }
-  const d = new Date(date);
-  if (isNaN(d)) return "";
-  const day = String(d.getDate()).padStart(2, "0");
-  const month = String(d.getMonth() + 1).padStart(2, "0");
-  const year = d.getFullYear();
-  return `${day}.${month}.${year}`;
+
+  try {
+    const d = new Date(date);
+    if (isNaN(d)) return "";
+    const day = String(d.getDate()).padStart(2, "0");
+    const month = String(d.getMonth() + 1).padStart(2, "0");
+    const year = d.getFullYear();
+    return `${day}.${month}.${year}`;
+  } catch (error) {
+    console.error("Ошибка форматирования даты:", error);
+    return "";
+  }
 };
 
 function Card({ card }) {
-  const theme = card.topic
-    ? card.topic.toLowerCase().replace(" ", "")
-    : "webdesign";
+  // Преобразуем тему для styled компонентов
+  const getTheme = () => {
+    if (!card.topic) return "gray";
+
+    const topicLower = card.topic.toLowerCase();
+    if (topicLower.includes("web") || topicLower.includes("design")) {
+      return "webdesign";
+    }
+    if (topicLower.includes("research")) {
+      return "research";
+    }
+    if (topicLower.includes("copywriting")) {
+      return "copywriting";
+    }
+    return "gray";
+  };
+
+  const theme = getTheme();
   const navigate = useNavigate();
 
   if (!card) return null;
 
-  const handleCardClick = () => {
+  const handleCardClick = (e) => {
+    e.stopPropagation();
     const cardId = card.id ?? card._id ?? card.taskId ?? card.uuid;
     if (!cardId) {
       console.warn("Карточка без id:", card);
@@ -41,7 +63,7 @@ function Card({ card }) {
   };
 
   return (
-    <CardItem onClick={handleCardClick}>
+    <CardItem>
       <CardWrapper>
         <CardGroup>
           <CardTheme theme={theme}>

@@ -24,30 +24,29 @@ import { useTasks } from "../../../contexts/TaskContext";
 
 const formatDateForServer = (dateString) => {
   if (!dateString) {
-    const today = new Date();
-    const day = String(today.getDate()).padStart(2, "0");
-    const month = String(today.getMonth() + 1).padStart(2, "0");
-    const year = today.getFullYear();
-    return `${day}.${month}.${year}`;
+    return new Date().toISOString();
   }
 
-  if (typeof dateString === "string" && dateString.includes(".")) {
-    return dateString;
+  if (typeof dateString === "string") {
+    // Если дата в формате "дд.мм.гггг", конвертируем в ISO
+    if (/^\d{2}\.\d{2}\.\d{4}$/.test(dateString)) {
+      const [day, month, year] = dateString.split(".");
+      const date = new Date(year, month - 1, day);
+      return date.toISOString();
+    }
+
+    // Если уже ISO строка, возвращаем как есть
+    if (dateString.includes("T")) {
+      return dateString;
+    }
   }
 
-  try {
-    const date = new Date(dateString);
-    if (isNaN(date)) return "";
-
-    const day = String(date.getDate()).padStart(2, "0");
-    const month = String(date.getMonth() + 1).padStart(2, "0");
-    const year = date.getFullYear();
-
-    return `${day}.${month}.${year}`;
-  } catch (error) {
-    console.error("Ошибка форматирования даты:", error);
-    return "";
+  // Если объект Date
+  if (dateString instanceof Date) {
+    return dateString.toISOString();
   }
+
+  return new Date().toISOString();
 };
 
 function PopNewCard({ onClose }) {
@@ -55,50 +54,96 @@ function PopNewCard({ onClose }) {
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
   const [date, setDate] = useState("");
-  const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState("");
 
-  const { createTask } = useTasks();
+  const { createTask, operationLoading } = useTasks();
   const navigate = useNavigate();
 
-  const handleClose = () => navigate(-1);
+  const handleClose = () => {
+    if (onClose) {
+      onClose();
+    } else {
+      navigate(-1);
+    }
+  };
 
   const handleCreate = async () => {
     if (!title.trim()) {
-      alert("Введите название задачи");
+      setError("Введите название задачи");
       return;
     }
 
-    setIsLoading(true);
+    setError("");
 
     try {
       const newTask = {
         title: title.trim(),
-        description: description.trim(),
+        description: description.trim() || "",
         topic: category,
-        status: "Без статуса",
+        status: "БЕЗ СТАТУСА",
         date: formatDateForServer(date),
       };
 
-      console.log("Создаваемая задача:", newTask);
+      console.log("Создание задачи:", newTask);
 
+      // Задача добавится в UI моментально (оптимистичное обновление)
       await createTask(newTask);
-      alert("Задача создана!");
-      onClose ? onClose() : handleClose();
+
+      // Очищаем форму
+      setTitle("");
+      setDescription("");
+      setDate("");
+      setCategory("Web Design");
+
+      // Закрываем попап
+      handleClose();
     } catch (error) {
-      alert("Не удалось создать задачу: " + error.message);
-      console.error("Ошибка создания:", error);
-    } finally {
-      setIsLoading(false);
+      console.error("Ошибка создания задачи:", error);
+      setError(
+        "Не удалось создать задачу: " + (error.message || "Неизвестная ошибка")
+      );
+    }
+  };
+
+  const isLoading = operationLoading;
+
+  // Получаем класс для стилизации категории
+  const getCategoryClass = (cat) => {
+    switch (cat) {
+      case "Web Design":
+        return "_web-design";
+      case "Research":
+        return "_research";
+      case "Copywriting":
+        return "_copywriting";
+      default:
+        return "";
     }
   };
 
   return (
     <PopNewCardStyled id="popNewCard">
-      <PopNewCardContainer onClick={handleClose}>
+      <PopNewCardContainer>
         <PopNewCardBlock onClick={(e) => e.stopPropagation()}>
           <PopNewCardContent>
             <PopNewCardTitle>Создание задачи</PopNewCardTitle>
             <PopNewCardClose onClick={handleClose}>&#10006;</PopNewCardClose>
+
+            {error && (
+              <div
+                style={{
+                  color: "#ff4444",
+                  backgroundColor: "#ffeeee",
+                  padding: "10px",
+                  borderRadius: "5px",
+                  marginBottom: "15px",
+                  fontSize: "14px",
+                }}
+              >
+                {error}
+              </div>
+            )}
+
             <PopNewCardWrap>
               <PopNewCardForm id="formNewCard" action="#">
                 <FormNewBlock>
@@ -111,6 +156,7 @@ function PopNewCard({ onClose }) {
                     autoFocus
                     value={title}
                     onChange={(e) => setTitle(e.target.value)}
+                    disabled={isLoading}
                   />
                 </FormNewBlock>
                 <FormNewBlock>
@@ -121,37 +167,50 @@ function PopNewCard({ onClose }) {
                     placeholder="Введите описание задачи..."
                     value={description}
                     onChange={(e) => setDescription(e.target.value)}
+                    disabled={isLoading}
                   />
                 </FormNewBlock>
               </PopNewCardForm>
-              <Calendar value={date} onChange={setDate} />
+              <Calendar value={date} onChange={setDate} disabled={isLoading} />
             </PopNewCardWrap>
             <Categories>
-              <CategoriesP>Выберете категорию</CategoriesP>
+              <CategoriesP>Выберите категорию</CategoriesP>
               <CategoriesThemes>
                 <CategoriesTheme
-                  className={`_web-design ${
+                  className={`${getCategoryClass("Web Design")} ${
                     category === "Web Design" ? "_active-category" : ""
                   }`}
-                  onClick={() => setCategory("Web Design")}
+                  onClick={() => !isLoading && setCategory("Web Design")}
+                  style={{
+                    cursor: isLoading ? "not-allowed" : "pointer",
+                    opacity: category === "Web Design" ? 1 : 0.4,
+                  }}
                 >
-                  <p className="_web-design">Web Design</p>
+                  <p>Web Design</p>
                 </CategoriesTheme>
                 <CategoriesTheme
-                  className={`_research ${
+                  className={`${getCategoryClass("Research")} ${
                     category === "Research" ? "_active-category" : ""
                   }`}
-                  onClick={() => setCategory("Research")}
+                  onClick={() => !isLoading && setCategory("Research")}
+                  style={{
+                    cursor: isLoading ? "not-allowed" : "pointer",
+                    opacity: category === "Research" ? 1 : 0.4,
+                  }}
                 >
-                  <p className="_research">Research</p>
+                  <p>Research</p>
                 </CategoriesTheme>
                 <CategoriesTheme
-                  className={`_copywriting ${
+                  className={`${getCategoryClass("Copywriting")} ${
                     category === "Copywriting" ? "_active-category" : ""
                   }`}
-                  onClick={() => setCategory("Copywriting")}
+                  onClick={() => !isLoading && setCategory("Copywriting")}
+                  style={{
+                    cursor: isLoading ? "not-allowed" : "pointer",
+                    opacity: category === "Copywriting" ? 1 : 0.4,
+                  }}
                 >
-                  <p className="_copywriting">Copywriting</p>
+                  <p>Copywriting</p>
                 </CategoriesTheme>
               </CategoriesThemes>
             </Categories>
@@ -160,6 +219,7 @@ function PopNewCard({ onClose }) {
               id="btnCreate"
               onClick={handleCreate}
               disabled={isLoading || !title.trim()}
+              style={{ opacity: isLoading ? 0.7 : 1 }}
             >
               {isLoading ? "Создание..." : "Создать задачу"}
             </FormNewCreate>

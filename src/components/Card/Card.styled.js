@@ -1,7 +1,7 @@
 import styled from "styled-components";
 
 export const themes = {
-  webDesign: {
+  webdesign: {
     background: "#ffc57dff",
     color: "#ff6d00",
   },
@@ -24,6 +24,12 @@ export const CardItem = styled.div`
   animation-name: card-animation;
   animation-duration: 500ms;
   animation-timing-function: linear;
+  cursor: pointer;
+
+  &:hover {
+    transform: scale(1.02);
+    transition: transform 0.2s ease;
+  }
 `;
 
 export const CardWrapper = styled.div`
@@ -59,8 +65,8 @@ export const CardTheme = styled.div`
   padding: 5px 14px;
   border-radius: 18px;
   background-color: ${(props) =>
-    themes[props.theme]?.background || "#f7c8a4ff"};
-  color: ${(props) => themes[props.theme]?.color || "#ff6d00"};
+    themes[props.theme]?.background || themes.gray.background};
+  color: ${(props) => themes[props.theme]?.color || themes.gray.color};
 
   p {
     font-size: 10px;
@@ -77,6 +83,11 @@ export const CardButton = styled.div`
   align-items: center;
   justify-content: space-around;
   padding: 2px;
+  cursor: pointer;
+
+  &:hover {
+    opacity: 0.8;
+  }
 
   div {
     width: 4px;

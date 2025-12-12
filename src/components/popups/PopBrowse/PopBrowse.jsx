@@ -23,9 +23,40 @@ import { statusList } from "../../../data.js";
 import { useTasks } from "../../../contexts/TaskContext";
 
 const formatDateForServer = (dateString) => {
+  if (!dateString) {
+    return new Date().toISOString();
+  }
+
+  if (typeof dateString === "string") {
+    // Если дата в формате "дд.мм.гггг", конвертируем в ISO
+    if (/^\d{2}\.\d{2}\.\d{4}$/.test(dateString)) {
+      const [day, month, year] = dateString.split(".");
+      const date = new Date(year, month - 1, day);
+      return date.toISOString();
+    }
+
+    // Если уже ISO строка, возвращаем как есть
+    if (dateString.includes("T")) {
+      return dateString;
+    }
+  }
+
+  // Если объект Date
+  if (dateString instanceof Date) {
+    return dateString.toISOString();
+  }
+
+  return new Date().toISOString();
+};
+
+// Функция для форматирования даты для отображения
+const formatDateForDisplay = (dateString) => {
   if (!dateString) return "";
 
-  if (typeof dateString === "string" && dateString.includes(".")) {
+  if (
+    typeof dateString === "string" &&
+    /^\d{2}\.\d{2}\.\d{4}$/.test(dateString)
+  ) {
     return dateString;
   }
 
@@ -39,7 +70,7 @@ const formatDateForServer = (dateString) => {
 
     return `${day}.${month}.${year}`;
   } catch (error) {
-    console.error("Ошибка форматирования даты:", error);
+    console.error("Ошибка форматирования даты для отображения:", error);
     return "";
   }
 };
@@ -55,13 +86,17 @@ function PopBrowse({ task, onClose }) {
   const [editedDescription, setEditedDescription] = useState(
     task?.description || ""
   );
-  const [editedDate, setEditedDate] = useState(task?.date || "");
+  const [editedDate, setEditedDate] = useState(
+    task?.date ? formatDateForDisplay(task.date) : ""
+  );
+  const [error, setError] = useState("");
 
   useEffect(() => {
     if (task) {
       setEditedStatus(task.status || "БЕЗ СТАТУСА");
       setEditedDescription(task.description || "");
-      setEditedDate(task.date || "");
+      setEditedDate(task.date ? formatDateForDisplay(task.date) : "");
+      setError("");
     }
   }, [task]);
 
@@ -71,16 +106,17 @@ function PopBrowse({ task, onClose }) {
   }
 
   const getThemeClass = (topic) => {
-    switch (topic) {
-      case "Web Design":
-        return "webDesign";
-      case "Research":
-        return "research";
-      case "Copywriting":
-        return "copywriting";
-      default:
-        return "gray";
+    const topicLower = (topic || "").toLowerCase();
+    if (topicLower.includes("web") || topicLower.includes("design")) {
+      return "_web-design";
     }
+    if (topicLower.includes("research")) {
+      return "_research";
+    }
+    if (topicLower.includes("copywriting")) {
+      return "_copywriting";
+    }
+    return "";
   };
 
   const themeClass = getThemeClass(task.topic);
@@ -88,15 +124,18 @@ function PopBrowse({ task, onClose }) {
   const handleCancel = () => {
     setEditedStatus(task.status || "БЕЗ СТАТУСА");
     setEditedDescription(task.description || "");
-    setEditedDate(task.date || "");
+    setEditedDate(task.date ? formatDateForDisplay(task.date) : "");
     setIsEditMode(false);
+    setError("");
   };
 
   const handleSave = async () => {
     if (!editedDescription.trim()) {
-      alert("Введите описание задачи");
+      setError("Введите описание задачи");
       return;
     }
+
+    setError("");
 
     try {
       const serverId = task._id || task.id;
@@ -109,14 +148,18 @@ function PopBrowse({ task, onClose }) {
         description: editedDescription.trim(),
         status: editedStatus,
         date: formatDateForServer(editedDate),
-        topic: task.topic,
+        topic: task.topic || "Web Design",
       };
 
+      console.log("Обновление задачи:", updatedTask);
+
+      // Изменения отобразятся в UI моментально (оптимистичное обновление)
       await updateTask(serverId, updatedTask);
-      alert("Задача успешно обновлена!");
+
       setIsEditMode(false);
     } catch (error) {
-      alert("Не удалось обновить задачу: " + error.message);
+      setError("Не удалось обновить задачу: " + error.message);
+      console.error("Ошибка обновления задачи:", error);
     }
   };
 
@@ -129,11 +172,13 @@ function PopBrowse({ task, onClose }) {
         throw new Error("Не найден ID задачи");
       }
 
+      // Задача удалится из UI моментально (оптимистичное обновление)
       await deleteTask(serverId);
-      alert("Задача удалена!");
+
       navigate("/");
     } catch (error) {
-      alert("Не удалось удалить задачу: " + error.message);
+      setError("Не удалось удалить задачу: " + error.message);
+      console.error("Ошибка удаления задачи:", error);
     }
   };
 
@@ -141,19 +186,34 @@ function PopBrowse({ task, onClose }) {
     navigate("/");
   };
 
+  const isLoading = operationLoading;
+
   return (
-    <PopBrowseStyled onClick={handleClose} id="popBrowse">
-      <PopBrowseContainer>
+    <PopBrowseStyled id="popBrowse">
+      <PopBrowseContainer onClick={handleClose}>
         <PopBrowseBlock onClick={(e) => e.stopPropagation()}>
           <PopBrowseContent>
             <PopBrowseTopBlock>
               <PopBrowseTitle>{task.title || "Без названия"}</PopBrowseTitle>
-              <CategoryTheme className={`_${themeClass} _active-category`}>
-                <p className={`_${themeClass}`}>
-                  {task.topic || "Без категории"}
-                </p>
+              <CategoryTheme className={`${themeClass} _active-category`}>
+                <p className={themeClass}>{task.topic || "Без категории"}</p>
               </CategoryTheme>
             </PopBrowseTopBlock>
+
+            {error && (
+              <div
+                style={{
+                  color: "#ff4444",
+                  backgroundColor: "#ffeeee",
+                  padding: "10px",
+                  borderRadius: "5px",
+                  marginBottom: "15px",
+                  fontSize: "14px",
+                }}
+              >
+                {error}
+              </div>
+            )}
 
             <Status>
               <StatusP>Статус</StatusP>
@@ -162,13 +222,14 @@ function PopBrowse({ task, onClose }) {
                   statusList.map((status) => (
                     <StatusTheme
                       key={status}
-                      onClick={() => setEditedStatus(status)}
+                      onClick={() => !isLoading && setEditedStatus(status)}
                       style={{
                         backgroundColor:
                           editedStatus === status ? "#94A6BE" : "#ffffff",
                         borderColor: "#94A6BE",
                         color: editedStatus === status ? "#ffffff" : "#94A6BE",
-                        cursor: "pointer",
+                        cursor: isLoading ? "not-allowed" : "pointer",
+                        opacity: isLoading ? 0.5 : 1,
                       }}
                     >
                       <p>{status}</p>
@@ -197,7 +258,7 @@ function PopBrowse({ task, onClose }) {
                   <FormBrowseArea
                     name="text"
                     id="textArea01"
-                    readOnly={!isEditMode}
+                    readOnly={!isEditMode || isLoading}
                     placeholder="Введите описание задачи..."
                     value={editedDescription}
                     onChange={(e) => setEditedDescription(e.target.value)}
@@ -207,7 +268,7 @@ function PopBrowse({ task, onClose }) {
               <Calendar
                 value={editedDate}
                 onChange={setEditedDate}
-                isDisabled={!isEditMode}
+                isDisabled={!isEditMode || isLoading}
               />
             </PopBrowseWrap>
 
@@ -217,14 +278,14 @@ function PopBrowse({ task, onClose }) {
                   <button
                     className="btn-browse__edit _btn-bor _hover03"
                     onClick={() => setIsEditMode(true)}
-                    disabled={operationLoading}
+                    disabled={isLoading}
                   >
                     Редактировать задачу
                   </button>
                   <button
                     className="btn-browse__delete _btn-bor _hover03"
                     onClick={handleDelete}
-                    disabled={operationLoading}
+                    disabled={isLoading}
                   >
                     Удалить задачу
                   </button>
@@ -232,7 +293,7 @@ function PopBrowse({ task, onClose }) {
                 <button
                   className="btn-edit__edit _btn-bg _hover01"
                   onClick={handleClose}
-                  disabled={operationLoading}
+                  disabled={isLoading}
                 >
                   Закрыть
                 </button>
@@ -243,14 +304,14 @@ function PopBrowse({ task, onClose }) {
                   <button
                     className="btn-edit__edit _btn-bg _hover01"
                     onClick={handleSave}
-                    disabled={operationLoading}
+                    disabled={isLoading}
                   >
-                    {operationLoading ? "Сохранение..." : "Сохранить"}
+                    {isLoading ? "Сохранение..." : "Сохранить"}
                   </button>
                   <button
                     className="btn-edit__edit _btn-bor _hover03"
                     onClick={handleCancel}
-                    disabled={operationLoading}
+                    disabled={isLoading}
                   >
                     Отменить
                   </button>
@@ -258,7 +319,7 @@ function PopBrowse({ task, onClose }) {
                     className="btn-edit__delete _btn-bor _hover03"
                     id="btnDelete"
                     onClick={handleDelete}
-                    disabled={operationLoading}
+                    disabled={isLoading}
                   >
                     Удалить задачу
                   </button>
@@ -266,7 +327,7 @@ function PopBrowse({ task, onClose }) {
                 <button
                   onClick={handleClose}
                   className="btn-edit__close _btn-bg _hover01"
-                  disabled={operationLoading}
+                  disabled={isLoading}
                 >
                   Закрыть
                 </button>
