@@ -1,69 +1,83 @@
-// MainPage.jsx
-import Column from "../components/Column/Column";
-import { cardList } from "../data";
-import { useState, useEffect } from "react";
-import {
-  MainWrapper,
-  MainBlock,
-  MainContent,
-  LoadingContainer,
-} from "../components/Main/Main.styled";
+import Header from "../components/Header/Header";
+import Main from "../components/Main/Main";
+import "../App.css";
 import { Outlet } from "react-router-dom";
+import { GlobalStyles } from "../styles/GlobalStyles.styled";
+import { useEffect, useState } from "react";
+import { useTasks } from "../contexts/TaskContext";
 
-// eslint-disable-next-line no-empty-pattern
-export default function MainPage({}) {
-  const statuses = [
-    "Без статуса",
-    "Нужно сделать",
-    "В работе",
-    "Тестирование",
-    "Готово",
-  ];
+function MainPage() {
+  const { operationError, clearOperationError } = useTasks();
+  const [showError, setShowError] = useState(false);
 
-  const [isLoading, setIsLoading] = useState(true);
-  const [cards, setCards] = useState(cardList);
-
-  // Загрузка карточек из localStorage при монтировании
+  // Обработка глобальных ошибок операций
   useEffect(() => {
-    const savedCards = localStorage.getItem("userCards");
-    if (savedCards) {
-      setCards(JSON.parse(savedCards));
+    if (operationError) {
+      console.error("Ошибка операций с задачами:", operationError);
+      setShowError(true);
+
+      // Автоматически скрываем ошибку через 5 секунд
+      const timer = setTimeout(() => {
+        setShowError(false);
+        clearOperationError();
+      }, 5000);
+
+      return () => clearTimeout(timer);
+    } else {
+      setShowError(false);
     }
-    setIsLoading(false);
-  }, []);
+  }, [operationError, clearOperationError]);
 
-  // Сохранение карточек в localStorage при изменении
-  useEffect(() => {
-    localStorage.setItem("userCards", JSON.stringify(cards));
-  }, [cards]);
-
-  // Функция для добавления новой карточки
-  const handleAddCard = (newCard) => {
-    setCards((prevCards) => [...prevCards, newCard]);
+  const handleCloseError = () => {
+    setShowError(false);
+    clearOperationError();
   };
 
   return (
-    <>
-      <MainWrapper className="main">
-        <div className="container">
-          <MainBlock>
-            {isLoading ? (
-              <LoadingContainer>Данные загружаются...</LoadingContainer>
-            ) : (
-              <MainContent>
-                {statuses.map((status) => (
-                  <Column
-                    key={status}
-                    title={status}
-                    cards={cards.filter((card) => card.status === status)}
-                  />
-                ))}
-              </MainContent>
-            )}
-          </MainBlock>
+    <div className="wrapper">
+      <GlobalStyles />
+      <Header />
+
+      {/* Глобальное уведомление об ошибке */}
+      {showError && operationError && (
+        <div
+          style={{
+            position: "fixed",
+            top: "20px",
+            right: "20px",
+            backgroundColor: "#ff4444",
+            color: "white",
+            padding: "15px 20px",
+            borderRadius: "8px",
+            zIndex: 1000,
+            boxShadow: "0 4px 12px rgba(0,0,0,0.15)",
+            maxWidth: "400px",
+            display: "flex",
+            justifyContent: "space-between",
+            alignItems: "center",
+          }}
+        >
+          <span style={{ flex: 1 }}>{operationError}</span>
+          <button
+            onClick={handleCloseError}
+            style={{
+              background: "none",
+              border: "none",
+              color: "white",
+              fontSize: "20px",
+              cursor: "pointer",
+              marginLeft: "10px",
+              padding: "0 5px",
+            }}
+          >
+            ×
+          </button>
         </div>
-      </MainWrapper>
-      <Outlet context={{ onAddCard: handleAddCard }} />
-    </>
+      )}
+
+      <Main />
+      <Outlet />
+    </div>
   );
 }
+export default MainPage;

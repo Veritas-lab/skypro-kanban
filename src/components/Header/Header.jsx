@@ -1,52 +1,64 @@
-import { Link } from "react-router-dom";
-import { useState } from "react";
-import PopUser from "../Popups/PopUser";
+import React, { useState, useContext } from "react";
+import { useNavigate, Link } from "react-router-dom";
+import PopUser from "../popups/PopUser/PopUser";
+import { ThemeContext } from "../../contexts/ThemeContext";
 import {
-  HeaderWrapper,
   HeaderBlock,
+  HeaderContent,
   HeaderLogo,
   HeaderNav,
-  HeaderButtonNew,
+  HeaderButton,
   HeaderUser,
 } from "./Header.styled";
 
-export default function Header() {
+function Header() {
   const [isUserPopupOpen, setIsUserPopupOpen] = useState(false);
+  const navigate = useNavigate();
+  const { theme } = useContext(ThemeContext);
+
   const toggleUserPopup = () => {
-    setIsUserPopupOpen(!isUserPopupOpen);
+    setIsUserPopupOpen((prev) => !prev);
   };
 
+  const userName =
+    JSON.parse(localStorage.getItem("userInfo") || "{}").name || "Пользователь";
+
+  const logoSrc =
+    theme === "dark" ? "/assets/logo_dark.png" : "/assets/logo.png";
+
   return (
-    <HeaderWrapper className="header">
+    <HeaderBlock>
       <div className="container">
-        <HeaderBlock>
-          <HeaderLogo className="_show _light">
-            <Link to="/">
-              <img src="../public/images/logo.png" alt="logo" />
-            </Link>
-          </HeaderLogo>
-          <HeaderLogo className="_dark">
-            <Link to="/">
-              <img src="../public/images/logo_dark.png" alt="logo" />
+        <HeaderContent>
+          <HeaderLogo>
+            <Link to="/" target="_self">
+              <img src={logoSrc} alt="logo" />
             </Link>
           </HeaderLogo>
           <HeaderNav>
-            <HeaderButtonNew id="btnMainNew">
-              <Link to="/new">Создать новую задачу</Link>
-            </HeaderButtonNew>
+            <HeaderButton
+              className="_hover01"
+              id="btnMainNew"
+              onClick={() => navigate("new-card")}
+            >
+              Создать новую задачу
+            </HeaderButton>
             <HeaderUser
               href="#user-set-target"
+              className="_hover02"
               onClick={(e) => {
                 e.preventDefault();
                 toggleUserPopup();
               }}
             >
-              Ivan Ivanov
+              {userName}
             </HeaderUser>
-            {isUserPopupOpen && <PopUser onClose={toggleUserPopup} />}
+            <PopUser $isVisible={isUserPopupOpen} onClose={toggleUserPopup} />
           </HeaderNav>
-        </HeaderBlock>
+        </HeaderContent>
       </div>
-    </HeaderWrapper>
+    </HeaderBlock>
   );
 }
+
+export default Header;
