@@ -7,7 +7,6 @@ import {
 } from "../services/tasksApi";
 import { useAuth } from "./AuthContext";
 
-// Маппинг статусов UI → API
 const toApiStatusMap = {
   "БЕЗ СТАТУСА": "Без статуса",
   "НУЖНО СДЕЛАТЬ": "Нужно сделать",
@@ -16,7 +15,6 @@ const toApiStatusMap = {
   ГОТОВО: "Готово",
 };
 
-// Маппинг статусов API → UI
 const toUiStatusMap = {
   "Без статуса": "БЕЗ СТАТУСА",
   "Нужно сделать": "НУЖНО СДЕЛАТЬ",
@@ -35,9 +33,7 @@ export function TaskProvider({ children }) {
   const [operationLoading, setOperationLoading] = useState(false);
   const [operationError, setOperationError] = useState(null);
 
-  // Нормализация задач из API в UI формат
   const normalizeTasks = (apiData) => {
-    // API возвращает { tasks: [...] }
     const tasksArray = apiData?.tasks || apiData || [];
     return (Array.isArray(tasksArray) ? tasksArray : []).map((t) => ({
       ...t,
@@ -110,11 +106,9 @@ export function TaskProvider({ children }) {
       console.log("Добавляем оптимистичную задачу:", optimisticTask);
       setTasks((prev) => [...prev, optimisticTask]);
 
-      // 2. Отправляем запрос к API
       const response = await apiCreate({ token, task: apiTask });
       console.log("Ответ от API при создании:", response);
 
-      // 3. API возвращает обновленный список задач { tasks: [...] }
       if (response?.tasks) {
         const normalized = normalizeTasks(response);
         console.log("Обновляем задачи из ответа API:", normalized);
@@ -123,7 +117,6 @@ export function TaskProvider({ children }) {
     } catch (e) {
       console.error("Ошибка при создании задачи:", e);
 
-      // 4. Откатываем оптимистичное обновление при ошибке
       setTasks((prev) => prev.filter((t) => !t.id.startsWith("temp-")));
 
       const errorMessage = e.message || "Ошибка при создании задачи";
@@ -139,7 +132,6 @@ export function TaskProvider({ children }) {
     setOperationError(null);
 
     try {
-      // Преобразуем в формат API
       const apiTask = {
         title: task.title || "Новая задача",
         topic: task.topic || "Research",
@@ -150,7 +142,6 @@ export function TaskProvider({ children }) {
 
       console.log("Обновление задачи:", id, apiTask);
 
-      // 1. Оптимистичное обновление - сохраняем текущее состояние для отката
       const currentTaskIndex = tasks.findIndex((t) => t.id === id);
       const currentTask = tasks[currentTaskIndex];
 
@@ -162,11 +153,9 @@ export function TaskProvider({ children }) {
       });
       setTasks((prev) => prev.map((t) => (t.id === id ? updatedTask : t)));
 
-      // 2. Отправляем запрос к API
       const response = await apiUpdate({ token, id, task: apiTask });
       console.log("Ответ от API при обновлении:", response);
 
-      // 3. Обновляем из ответа API если есть
       if (response?.tasks) {
         const normalized = normalizeTasks(response);
         setTasks(normalized);
@@ -199,16 +188,13 @@ export function TaskProvider({ children }) {
     try {
       console.log("Удаление задачи:", id);
 
-      // 1. Оптимистичное обновление - сохраняем удаляемую задачу для отката
       const deletedTask = tasks.find((t) => t.id === id);
 
       setTasks((prev) => prev.filter((t) => t.id !== id));
 
-      // 2. Отправляем запрос к API
       const response = await apiDelete({ token, id });
       console.log("Ответ от API при удалении:", response);
 
-      // 3. Обновляем из ответа API если есть
       if (response?.tasks) {
         const normalized = normalizeTasks(response);
         setTasks(normalized);
@@ -230,7 +216,6 @@ export function TaskProvider({ children }) {
     }
   };
 
-  // Функция для прямого обновления локального состояния (например, при drag-and-drop)
   const setTasksDirectly = (newTasks) => {
     const normalized = normalizeTasks(newTasks);
     setTasks(normalized);

@@ -35,13 +35,11 @@ const formatDateForServer = (dateString) => {
       return date.toISOString();
     }
 
-    // Если уже ISO строка, возвращаем как есть
     if (dateString.includes("T")) {
       return dateString;
     }
   }
 
-  // Если объект Date
   if (dateString instanceof Date) {
     return dateString.toISOString();
   }
@@ -49,7 +47,6 @@ const formatDateForServer = (dateString) => {
   return new Date().toISOString();
 };
 
-// Функция для форматирования даты для отображения
 const formatDateForDisplay = (dateString) => {
   if (!dateString) return "";
 
@@ -153,7 +150,6 @@ function PopBrowse({ task, onClose }) {
 
       console.log("Обновление задачи:", updatedTask);
 
-      // Изменения отобразятся в UI моментально (оптимистичное обновление)
       await updateTask(serverId, updatedTask);
 
       setIsEditMode(false);
@@ -172,7 +168,6 @@ function PopBrowse({ task, onClose }) {
         throw new Error("Не найден ID задачи");
       }
 
-      // Задача удалится из UI моментально (оптимистичное обновление)
       await deleteTask(serverId);
 
       navigate("/");

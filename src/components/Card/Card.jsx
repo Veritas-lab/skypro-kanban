@@ -30,7 +30,6 @@ export const formatDisplayDate = (date) => {
 };
 
 function Card({ card }) {
-  // Преобразуем тему для styled компонентов
   const getTheme = () => {
     if (!card.topic) return "gray";
 

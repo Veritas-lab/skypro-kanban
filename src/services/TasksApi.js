@@ -9,7 +9,8 @@ export async function fetchTasks({ token }) {
         Authorization: `Bearer ${token}`,
       },
     });
-    return response.data.tasks;
+
+    return response.data;
   } catch (error) {
     throw new Error(
       error.response?.data?.message || "Ошибка при загрузке задач"
@@ -29,6 +30,7 @@ export async function createTask({ token, task }) {
     });
 
     console.log("Ответ от сервера:", response.data);
+
     return response.data;
   } catch (error) {
     console.error("Ошибка при создании задачи:", {
@@ -61,6 +63,7 @@ export async function updateTask({ token, id, task }) {
     });
 
     console.log("Ответ от сервера при обновлении:", response.data);
+
     return response.data;
   } catch (error) {
     console.error("Ошибка при обновлении задачи:", {
@@ -92,6 +95,7 @@ export async function deleteTask({ token, id }) {
     });
 
     console.log("Ответ от сервера при удалении:", response.data);
+
     return response.data;
   } catch (error) {
     console.error("Ошибка при удалении задачи:", {
