@@ -1,137 +1,84 @@
-const USER_API_URL = "https://wedev-api.sky.pro/api/user";
-const KANBAN_API_URL = "https://wedev-api.sky.pro/api/kanban";
+import axios from "axios";
 
-// Функции для авторизации
+const API_URL = "https://wedev-api.sky.pro/api/user";
+
 export async function signIn({ login, password }) {
   try {
-    console.log("Отправка запроса на:", `${USER_API_URL}/login`);
-    console.log("Данные:", { login, password });
+    const response = await axios.post(
+      `${API_URL}/login`,
+      {
+        login,
+        password,
+      },
+      {
+        headers: {
+          "Content-Type": "",
+        },
+      }
+    );
 
-    const response = await fetch(`${USER_API_URL}/login`, {
-      method: "POST",
-      body: JSON.stringify({ login, password }),
-    });
-
-    if (!response.ok) {
-      const errorData = await response.json();
-      throw new Error(
-        errorData.message || errorData.error || "Ошибка при входе"
-      );
+    if (response.data.error) {
+      throw new Error(response.data.error);
     }
 
-    const data = await response.json();
-    console.log("Успешный ответ:", data);
-    return data;
+    return response.data;
   } catch (error) {
-    console.error("Ошибка API:", error.message);
-    throw new Error(error.message || "Произошла ошибка при входе");
+    console.error(
+      "Login error details:",
+      error.response?.data || error.message
+    );
+
+    if (error.response) {
+      const errorMessage =
+        error.response.data.message ||
+        error.response.data.error ||
+        "Ошибка при входе";
+      throw new Error(errorMessage);
+    } else if (error.request) {
+      throw new Error("Сервер не отвечает. Проверьте интернет-соединение.");
+    } else {
+      throw new Error("Ошибка при отправке запроса: " + error.message);
+    }
   }
 }
 
 export async function signUp({ name, login, password }) {
   try {
-    console.log("Отправка запроса на:", USER_API_URL);
-    console.log("Данные:", { name, login, password });
-
-    const response = await fetch(USER_API_URL, {
-      method: "POST",
-      body: JSON.stringify({ name, login, password }),
-    });
-
-    if (!response.ok) {
-      const errorData = await response.json();
-      throw new Error(
-        errorData.message || errorData.error || "Ошибка при регистрации"
-      );
-    }
-
-    const data = await response.json();
-    console.log("Успешный ответ:", data);
-    return data;
-  } catch (error) {
-    console.error("Ошибка API:", error.message);
-    throw new Error(error.message || "Произошла ошибка при регистрации");
-  }
-}
-
-// Функции для работы с задачами
-export async function fetchTasks({ token }) {
-  try {
-    const response = await fetch(KANBAN_API_URL, {
-      headers: {
-        Authorization: "Bearer " + token,
+    const response = await axios.post(
+      API_URL,
+      {
+        name,
+        login,
+        password,
       },
-    });
+      {
+        headers: {
+          "Content-Type": "",
+        },
+      }
+    );
 
-    if (!response.ok) {
-      throw new Error("Ошибка при загрузке задач");
+    if (response.data.error) {
+      throw new Error(response.data.error);
     }
 
-    const data = await response.json();
-    return data;
+    return response.data;
   } catch (error) {
-    throw new Error(error.message);
-  }
-}
+    console.error(
+      "Registration error details:",
+      error.response?.data || error.message
+    );
 
-export async function postTask({ token, task }) {
-  try {
-    const response = await fetch(KANBAN_API_URL, {
-      method: "POST",
-      headers: {
-        Authorization: "Bearer " + token,
-      },
-      body: JSON.stringify(task),
-    });
-
-    if (!response.ok) {
-      throw new Error("Ошибка при создании задачи");
+    if (error.response) {
+      const errorMessage =
+        error.response.data.message ||
+        error.response.data.error ||
+        "Ошибка при регистрации";
+      throw new Error(errorMessage);
+    } else if (error.request) {
+      throw new Error("Сервер не отвечает. Проверьте интернет-соединение.");
+    } else {
+      throw new Error("Ошибка при отправке запроса: " + error.message);
     }
-
-    const data = await response.json();
-    return data;
-  } catch (error) {
-    throw new Error(error.message);
-  }
-}
-
-export async function editTask({ token, id, task }) {
-  try {
-    const response = await fetch(`${KANBAN_API_URL}/${id}`, {
-      method: "PATCH",
-      headers: {
-        Authorization: "Bearer " + token,
-      },
-      body: JSON.stringify(task),
-    });
-
-    if (!response.ok) {
-      throw new Error("Ошибка при обновлении задачи");
-    }
-
-    const data = await response.json();
-    return data;
-  } catch (error) {
-    throw new Error(error.message);
-  }
-}
-
-export async function deleteTask({ token, id }) {
-  try {
-    const response = await fetch(`${KANBAN_API_URL}/${id}`, {
-      method: "DELETE",
-      headers: {
-        Authorization: "Bearer " + token,
-      },
-    });
-
-    if (!response.ok) {
-      throw new Error("Ошибка при удалении задачи");
-    }
-
-    const data = await response.json();
-    return data;
-  } catch (error) {
-    throw new Error(error.message);
   }
 }

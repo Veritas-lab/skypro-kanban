@@ -1,71 +1,29 @@
-// AppRoutes.jsx
-import { Routes, Route, Navigate } from "react-router-dom";
-import { useState, useEffect } from "react";
+import React from "react";
+import { Routes, Route } from "react-router-dom";
 import MainPage from "../pages/MainPage";
-import LoginPage from "../pages/LoginPage";
-import RegisterPage from "../pages/RegisterPage";
+import CardPage from "../pages/CardPage";
+import NewCardPage from "../pages/NewCardPage";
 import ExitPage from "../pages/ExitPage";
+import SignInPage from "../pages/SignInPage";
+import SignUpPage from "../pages/SignUpPage";
 import NotFoundPage from "../pages/NotFoundPage";
-import PopBrowse from "../components/popups/PopBrowse";
-import PopNewCardPage from "../pages/PopNewCardPage";
-import Layout from "./Layout";
+import PrivateRoute from "./PrivateRoute";
 
-function ProtectedRoute({ isAuth, children }) {
-  return isAuth ? children : <Navigate to="/login" replace />;
-}
-
-export default function AppRoutes({
-  cards,
-  onAddCard,
-  onUpdateCards,
-  onLoadTasks,
-  loading,
-}) {
-  const [isAuth, setIsAuth] = useState(!!localStorage.getItem("userInfo"));
-
-  useEffect(() => {
-    const checkAuth = () => {
-      const userInfo = JSON.parse(localStorage.getItem("userInfo"));
-      setIsAuth(!!userInfo?.token);
-    };
-    checkAuth();
-    window.addEventListener("storage", checkAuth);
-    return () => window.removeEventListener("storage", checkAuth);
-  }, []);
-
+function AppRoutes() {
   return (
     <Routes>
-      <Route
-        element={
-          <ProtectedRoute isAuth={isAuth}>
-            <Layout setIsAuth={setIsAuth} />
-          </ProtectedRoute>
-        }
-      >
-        <Route
-          path="/"
-          element={
-            <MainPage
-              setIsAuth={setIsAuth}
-              cards={cards}
-              onAddCard={onAddCard}
-              onUpdateCards={onUpdateCards}
-              onLoadTasks={onLoadTasks}
-              loading={loading}
-            />
-          }
-        >
-          <Route path="card/:id" element={<PopBrowse />} />
-          <Route path="new" element={<PopNewCardPage />} />
-          <Route path="exit" element={<ExitPage setIsAuth={setIsAuth} />} />
+      <Route element={<PrivateRoute />}>
+        <Route path="/" element={<MainPage />}>
+          <Route path="new-card" element={<NewCardPage />} />
+          <Route path="/card/:id" element={<CardPage />} />
         </Route>
+        <Route path="/exit" element={<ExitPage />} />
       </Route>
-      <Route path="/login" element={<LoginPage setIsAuth={setIsAuth} />} />
-      <Route
-        path="/register"
-        element={<RegisterPage setIsAuth={setIsAuth} />}
-      />
+      <Route path="/login" element={<SignInPage />} />
+      <Route path="/register" element={<SignUpPage />} />
       <Route path="*" element={<NotFoundPage />} />
     </Routes>
   );
 }
+
+export default AppRoutes;
