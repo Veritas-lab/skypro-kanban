@@ -10,13 +10,11 @@ function MainPage() {
   const { operationError, clearOperationError } = useTasks();
   const [showError, setShowError] = useState(false);
 
-  // Обработка глобальных ошибок операций
   useEffect(() => {
     if (operationError) {
       console.error("Ошибка операций с задачами:", operationError);
       setShowError(true);
 
-      // Автоматически скрываем ошибку через 5 секунд
       const timer = setTimeout(() => {
         setShowError(false);
         clearOperationError();

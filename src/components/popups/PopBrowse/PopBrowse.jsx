@@ -28,7 +28,6 @@ const formatDateForServer = (dateString) => {
   }
 
   if (typeof dateString === "string") {
-    // Если дата в формате "дд.мм.гггг", конвертируем в ISO
     if (/^\d{2}\.\d{2}\.\d{4}$/.test(dateString)) {
       const [day, month, year] = dateString.split(".");
       const date = new Date(year, month - 1, day);
